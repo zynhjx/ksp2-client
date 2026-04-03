@@ -1,0 +1,121 @@
+'use client'
+import clsx from 'clsx'
+import {
+  HomeIcon,
+  LucideIcon,
+  LucideLayoutDashboard,
+  Calendar,
+  LightbulbIcon,
+  Sidebar as SidebarIcon,
+  ChevronRight
+} from "lucide-react";
+import { useState} from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const youthNavs = [
+  {name: "Dashboard", icon: LucideLayoutDashboard, path: "/youth/dashboard"},
+  {name: "Programs", icon: Calendar, path: "/youth/programs"},
+  {name: "Suggestions", icon: LightbulbIcon, path: "/youth/suggestions"},
+]
+
+const skNavs = [
+  {name: "Dashboard", icon: LucideLayoutDashboard, path: "dashboard"},
+  {name: "Programs", icon: HomeIcon, path: "home"},
+  {name: "Suggestions", icon: HomeIcon, path: "dwadaw"},
+]
+
+const adminNavs = [
+  {name: "Dashboard", icon: LucideLayoutDashboard, path: "dashboard"},
+  {name: "Programs", icon: HomeIcon, path: "home"},
+  {name: "Suggestions", icon: HomeIcon, path: "dwadaw"},
+]
+
+
+const Sidebar = () => {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(true);
+  const [userNavs, setUserNavs] = useState(youthNavs);
+
+  console.log(pathname)
+
+
+  return (
+    <aside className={clsx(
+      "bg-theme-dark-blue text-white box-border flex flex-col",
+      isOpen ? "w-70" : "w-auto",
+      !isOpen && "max-w-18"
+    )}>
+      <header className={clsx(
+        "bg-transparent h-12.5 flex relative items-center p-3 box-content border-white/20 border-b"
+      )}>
+        <div className={clsx(
+          "relative h-10 w-20",
+          !isOpen && "hidden"
+        )}>
+          <Image
+            src={"/LogoTextLight.svg"}
+            alt={"logo"}
+            fill
+            loading="eager"
+            style={{ objectFit: "contain" }}
+            className={"ml-2"}
+          />
+        </div>
+        <button onClick={() => setIsOpen(!isOpen)}
+          className={clsx(
+            "p-3 cursor-pointer hover:bg-white/10 rounded-2xl border-none",
+            isOpen && "ml-auto"
+          )
+        }>
+          <SidebarIcon size={24}/>
+        </button>
+      </header>
+      <nav className={clsx(
+        "p-3 overflow-hidden box-border",
+
+      )}>
+        <ul className={"flex flex-col gap-y-3"}>
+          {userNavs.map((nav: {name: string, icon: LucideIcon, path: string}) => (
+            <li key={nav.name}>
+              <Link href={nav.path} className={clsx(
+                "flex gap-x-4 p-3 rounded-xl items-center",
+                pathname !== nav.path && "hover:bg-white/10",
+                pathname === nav.path && "bg-white/20"
+              )}>
+                <nav.icon
+                  size={24}
+                />
+                <span className={clsx(!isOpen && "hidden", "text-sm")}>{nav.name}</span>
+                {pathname === nav.path && isOpen && (
+                  <ChevronRight size={20} color={"white"} className={"ml-auto"}/>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <footer
+        className={clsx(
+          "mt-auto h-auto border-t border-white/20 p-3",
+        )}
+      >
+        <div className={clsx("flex",
+          isOpen && "gap-x-3"
+        )}>
+          <div className="flex rounded-full h-12 w-12 bg-blue-950 justify-center items-center font-bold">FL</div>
+          <div className={clsx(
+            "flex flex-col gap-y-0.5 justify-center",
+            !isOpen && "hidden",
+          )}>
+            <span className={"text-sm"}>First and Last Name</span>
+            <span className={"text-xs text-gray-300"}>firstandlastname@example.com</span>
+          </div>
+        </div>
+      </footer>
+
+    </aside>
+  )
+}
+export default Sidebar
