@@ -16,7 +16,7 @@ const Section = ({ children, className, containerClassName, id } : { children: R
 
 const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => {
     return (
-        <div className="p-8 rounded-2xl border border-gray-100 bg-white hover:border-blue-100 hover:shadow-xl hover:shadow-blue-50/50 transition-all duration-300 group">
+        <div className="p-8 rounded-2xl border border-gray-100 bg-theme-white hover:border-blue-100 hover:shadow-xl hover:shadow-blue-50/50 transition-all duration-300 group">
             <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-6 group-hover:bg-theme-blue group-hover:text-white transition-colors duration-300 text-theme-blue">
                 {icon}
             </div>
@@ -39,8 +39,8 @@ const LandingPage = () => {
     // const {user, isAuthenticated} =
 
     return (
-        <div className="min-h-screen bg-white">
-            <header className="sticky top-0 z-50 bg-white backdrop-blur-md border-b border-gray-100 flex items-center justify-center">
+        <div className="min-h-screen bg-theme-white">
+            <header className="sticky top-0 z-50 bg-theme-white backdrop-blur-md border-b border-gray-100 flex items-center justify-center">
                 <div className="relative flex items-center justify-between h-20 w-full max-w-7xl px-6">
                     {/* Logo */}
                     <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ const LandingPage = () => {
                                   </Link>
                                   <Link
                                     href="/auth/login"
-                                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-gray-700 border border-gray-200 font-bold text-lg hover:bg-gray-50 transition cursor-pointer text-center"
+                                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-white text-gray-700 border border-gray-200 font-bold text-lg hover:bg-gray-50 transition cursor-pointer text-center"
                                   >
                                       Sign In to Dashboard
                                   </Link>
@@ -176,7 +176,7 @@ const LandingPage = () => {
 
                 {/* CTA Section */}
                 <Section className="bg-theme-blue text-white overflow-hidden relative">
-                    <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-white/10 rounded-full blur-[100px]"></div>
+                    <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-theme-white/10 rounded-full blur-[100px]"></div>
                     <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-blue-400/20 rounded-full blur-[100px]"></div>
 
                     <div className="flex flex-col items-center text-center relative z-10 py-10">
@@ -185,7 +185,7 @@ const LandingPage = () => {
                             Join over 40 barangays already using the Kabataan Statistical Profile to serve their communities better.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/auth/register" className="px-10 py-5 rounded-2xl bg-white text-theme-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">
+                            <Link href="/auth/register" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">
                                 Get Started for Free
                             </Link>
                         </div>
