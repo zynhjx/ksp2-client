@@ -23,6 +23,6 @@ export default async function VerifyLayout() {
 	console.log(decoded)
 
   return (
-		<RegisterVerifyClientPage fetchedEmail={decoded.data.email} fetchedTtl={decoded.data.ttl}/>
+		<RegisterVerifyClientPage fetchedEmail={decoded.data.email} fetchedTtl={decoded.data.ttl} token={token}/>
   );
 }

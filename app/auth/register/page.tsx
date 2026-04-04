@@ -14,6 +14,10 @@ export default async function RegisterPage() {
     },
   })
 
+  const response = await res.json()
+  console.log("register ssr:")
+  console.log(response)
+
   if (res.ok) {
     redirect("/auth/register/verify")
   }

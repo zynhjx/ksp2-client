@@ -8,11 +8,12 @@ import Button from "@/components/Button"
 import { EXPRESS_API_URL } from "@/lib/env"
 
 type RegisterVerifyClientProps = {
-    fetchedEmail: string
-		fetchedTtl: number
+    fetchedEmail: string,
+		fetchedTtl: number,
+		token: string
 }
 
-const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl }: RegisterVerifyClientProps) => {
+const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl, token }: RegisterVerifyClientProps) => {
 	const [countdown, setCountdown] = useState(fetchedTtl)
 	const [otp, setOtp] = useState("")
 
@@ -21,11 +22,10 @@ const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl }: RegisterVerifyCl
 	const handleResend = async () => {
 		try {
 			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/resend`, {
-				method: "POST",
 				headers: {
+					"Authorization": `Bearer ${token}`,
 					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ email: fetchedEmail }), // send email in request body
+				}
 			});
 
 			const data = await res.json();
