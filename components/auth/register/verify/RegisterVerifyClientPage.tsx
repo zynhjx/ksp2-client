@@ -5,22 +5,36 @@ import AuthCardTitle from "@/components/auth/AuthCardTitle"
 import FormInput from "@/components/auth/form/FormInput"
 import { toast } from "react-toastify"
 import Button from "@/components/Button"
+import { EXPRESS_API_URL } from "@/lib/env"
 
 type RegisterVerifyClientProps = {
     fetchedEmail: string
+		fetchedTtl: number
 }
 
-const RegisterVerifyClientPage = ({ fetchedEmail }: RegisterVerifyClientProps) => {
-	const [countdown, setCountdown] = useState(5)
+const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl }: RegisterVerifyClientProps) => {
+	const [countdown, setCountdown] = useState(fetchedTtl)
 	const [otp, setOtp] = useState("")
-
-	
 
 	const isFormValid = otp.trim() !== "" && otp.length === 6
 
-	const handleResend = () => {
-    setCountdown(60)
-  }
+	const handleResend = async () => {
+		try {
+			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/resend`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ email: fetchedEmail }), // send email in request body
+			});
+
+			const data = await res.json();
+			toast.success(data.message)
+			setCountdown(60); // reset countdown after sending
+		} catch (error) {
+			console.error("Error resending OTP:", error);
+		}
+	};
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
@@ -49,11 +63,14 @@ const RegisterVerifyClientPage = ({ fetchedEmail }: RegisterVerifyClientProps) =
 			<FormInput
 				value={otp}
 				name={"otp"}
-				onChange={(e) => (setOtp(e.target.value.slice(0, 6)))}
+				onChange={(e) => (setOtp(e.target.value.replace(/\D/g, "").slice(0, 6)))}
+				inputMode="numeric"
 				type={"text"}
+				maxLength={6}
+				pattern="\d"
 				placeholder='012345'
 				label={"One Time Password (OTP)"}
-            />
+			/>
 
 			<Button
 				primary
@@ -67,12 +84,12 @@ const RegisterVerifyClientPage = ({ fetchedEmail }: RegisterVerifyClientProps) =
 			<p className="text-sm text-gray-700 text-center">
 				Didn&apos;t receive the code?{" "}
 				<button
-						type="button"
-						onClick={handleResend}
-						disabled={countdown > 0}
-						className="font-medium text-theme-blue hover:underline hover:cursor-pointer disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed"
+					type="button"
+					onClick={handleResend}
+					disabled={countdown > 0}
+					className="font-medium text-theme-blue hover:underline hover:cursor-pointer disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed"
 				>
-						{countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
+					{countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
 				</button>
 			</p>
     </form>

@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import RegisterVerifyClientPage from "@/components/auth/register/verify/RegisterVerifyClientPage";
@@ -21,7 +20,9 @@ export default async function VerifyLayout() {
 
 	const decoded = await res.json()
 
+	console.log(decoded)
+
   return (
-	<RegisterVerifyClientPage fetchedEmail={decoded.data.email}/>
+		<RegisterVerifyClientPage fetchedEmail={decoded.data.email} fetchedTtl={decoded.data.ttl}/>
   );
 }

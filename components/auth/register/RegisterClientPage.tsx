@@ -19,10 +19,12 @@ type RegisterPageProps = {
 const RegisterClientPage = ({ fetchedEmail }: RegisterPageProps) => {
   const router = useRouter();
   const [email, setEmail] = useState(fetchedEmail || "")
+  const [sending, setSending] = useState(false)
   const [agreed, setAgreed] = useState(fetchedEmail? true : false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSending(true)
     try {
       const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email`, {
         method: "POST",
@@ -43,13 +45,16 @@ const RegisterClientPage = ({ fetchedEmail }: RegisterPageProps) => {
       const data = await res.json()
       toast.success(data.message)
       
+      
       router.push("/auth/register/verify")
 
       
 
     } catch (err) {
       console.error("Error sending request:", err);
-    } 
+    } finally {
+      setSending(false)
+    }
   }
 
   const isValidEmail = (email: string) => {
@@ -88,9 +93,9 @@ const RegisterClientPage = ({ fetchedEmail }: RegisterPageProps) => {
       <Button
         type="submit"
         primary
-        disabled={!isFormValid}
+        disabled={!isFormValid || sending}
       >
-        Continue
+        {sending ? "Sending" : "Continue"}
       </Button>
 
 
