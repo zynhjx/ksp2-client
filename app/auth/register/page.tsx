@@ -1,26 +1,346 @@
-import { cookies } from "next/headers";
-import RegisterClientPage from "@/components/auth/register/RegisterClientPage";
-import { redirect } from "next/navigation";
 
-export default async function RegisterPage() {
+'use client'
 
-	const cookieStore = await cookies()
-	const token = cookieStore.get("verificationToken")?.value
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
+import AuthCardTitle from "@/components/auth/AuthCardTitle";
+import AuthCardFooter from "@/components/auth/AuthCardFooter";
+import FormInput from "@/components/auth/form/FormInput";
+import { EXPRESS_API_URL } from "@/lib/env";
+import Button from '@/components/Button';
+import { toast } from 'react-toastify';
 
-	const res = await fetch("http://localhost:5000/api/auth/check-status", {
-    headers: {
-      "Authorization": `Bearer ${token}`, // common practice
-      "Content-Type": "application/json",
-    },
-  })
 
-  if (res.ok) {
-    redirect("/auth/register/verify")
+// type RegisterPageProps = {
+//     fetchedEmail?: string
+// }
+
+type StepOneProps = {
+  email: string;
+  setEmail: (v: string) => void;
+  agreed: boolean;
+  setAgreed: (v: boolean) => void;
+  isFormValid: boolean;
+  sending: boolean;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+}
+
+const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid, sending}: StepOneProps) => {
+    return (
+      <form onSubmit={handleSubmit} className='space-y-4'>
+        <AuthCardTitle title={"Sign up with email"}/>
+
+        <FormInput
+          value={email}
+          name={"email"}
+          onChange={(e) => (setEmail(e.target.value))}
+          type={"email"}
+          placeholder={"john@example.com"}
+          label={"Email Address"} />
+
+        <div className="flex gap-x-2 mt-5 mb-4 items-center px-2">
+          <input
+            type={"checkbox"}
+            checked={agreed}
+            onChange={() => {setAgreed(prev => !prev)}}
+            className={"accent-theme-blue h-4 w-4 hover:cursor-pointer focus:outline-none"}/>
+
+          <p className="text-sm text-gray-600 text-center">
+            I agree to the{" "}
+            <Link href="/terms" className="underline text-theme-blue">Terms of Use</Link> and{" "}
+            <Link href="/privacy" className="underline text-theme-blue">Privacy Policy</Link>.
+          </p>
+        </div>
+
+        <Button
+          type="submit"
+          primary
+          disabled={!isFormValid || sending}
+        >
+          {sending ? "Sending" : "Continue"}
+        </Button>
+
+
+        <AuthCardFooter type={"register"} />
+
+      </form>
+    )
   }
 
-  const decoded = await res.json()
 
-  return (
-    <RegisterClientPage fetchedEmail={decoded.data?.email}/>
-  );
+  type StepTwoProps = {
+    email: string;
+    otp: string;
+    setOtp: (v: string) => void;
+    invalid: boolean;
+    setInvalid: (v: boolean) => void;
+    success: boolean;
+    isFormValid: boolean;
+    countdown: number;
+    pendingResend: boolean;
+    handleVerify: (e: React.FormEvent<HTMLFormElement>) => void;
+    handleResend: () => void;
+  }
+
+  const StepTwo = ({handleVerify, otp, setOtp, setInvalid, email, invalid, success, isFormValid, handleResend, countdown, pendingResend}: StepTwoProps) => {
+    return (
+      <form onSubmit={handleVerify} className='space-y-4'>
+        <AuthCardTitle title={"Check your inbox"} className="mb-3"/>
+
+        <p className="text-sm text-gray-700 text-center mb-4">
+          An OTP has been sent to <span className="font-medium text-theme-blue">{email}</span>. Please check your inbox and enter it below.
+        </p>
+
+        <FormInput
+          value={otp}
+          name={"otp"}
+          onChange={(e) => {
+            setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+            setInvalid(false)
+          }}
+          inputMode="numeric"
+          type={"text"}
+          maxLength={6}
+          placeholder='012345'
+          label={"One Time Password (OTP)"}
+          error={invalid}
+          success={success}
+        />
+
+        <Button
+          primary
+          type="submit"
+          disabled={!isFormValid || success}
+          className={
+            success ? "bg-green-600 text-white border-green-600" : ""
+          }
+        >
+          {success ? "Verified" : "Verify"}
+        </Button>
+
+        
+        <p className="text-sm text-gray-700 text-center">
+          Didn&apos;t receive the code?{" "}
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={countdown > 0 || pendingResend || success}
+            className="font-medium text-theme-blue hover:underline hover:cursor-pointer disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed"
+          >
+            {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
+          </button>
+        </p>
+      </form>
+    )
+  }
+
+
+
+type MeResponse = {
+  message: string,
+  data: {
+    email: string,
+    otpCooldown: number
+  } | null
 }
+
+const RegisterPage = () => {
+  const [email, setEmail] = useState("")
+  const [sending, setSending] = useState(false)
+  const [agreed, setAgreed] = useState(false);
+  const [step, setStep] = useState(1)
+  const [countdown, setCountdown] = useState(0)
+	const [otp, setOtp] = useState("")
+	const [invalid, setInvalid] = useState(false)
+	const [success, setSuccess] = useState(false)
+	const [pendingResend, setPendingResend] = useState(false)
+
+  useEffect(() => {
+    const getMe = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/me", {
+          credentials: "include"
+        })
+
+
+        const data: MeResponse = await res.json()
+
+        setEmail(data.data?.email || "")
+        setAgreed(data.data?.email ? true : false)
+        setCountdown(data.data?.otpCooldown || 30)
+      } catch (error) {
+        console.log(error)
+      }
+      
+    }
+    
+    getMe()
+  }, [])
+
+  useEffect(() => {
+		if (countdown <= 0) return;
+
+		const interval = setInterval(() => {
+			setCountdown((prev) => prev - 1);
+		}, 1000);
+
+		return () => clearInterval(interval); // cleanup
+	}, [countdown]);
+
+  const handleResend = async () => {
+		setPendingResend(true)
+		try {
+			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/resend`, {
+        credentials: "include"
+      }
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        toast.error(errorData?.message || "Something went wrong.");
+        return; 
+      }
+
+      const data = await res.json()
+
+      if (data.success) {
+        toast.success(data.message)
+      } else {
+        toast.info(data.message)
+      }
+
+      setCountdown(data.otpCooldown)
+		} catch (error) {
+			console.error("Error resending OTP:", error);
+		} finally {
+			setPendingResend(false)
+		}
+	};
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSending(true)
+    try {
+      const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+        credentials: "include"
+      });
+
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        toast.error(errorData?.message || "Something went wrong.");
+        return; 
+      }
+
+      const data = await res.json()
+
+      if (data.success) {
+        toast.success(data.message)
+      } else {
+        toast.info(data.message)
+      }
+
+      setCountdown(data.otpCooldown)
+      
+      setStep(2)
+
+    } catch (err) {
+      console.error("Error sending request:", err);
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const handleVerify = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		try {
+			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/verify`, {
+				method: "POST",
+        credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ otp })
+			});
+
+			const data = await res.json();
+
+			if (!res.ok) {
+				toast.error(data.message)
+				return
+			}
+
+			if (!data.success) {
+				setInvalid(true)
+				toast.error(data.message)
+				return
+			}
+			
+			setSuccess(true)
+			toast.success(data.message)
+
+		} catch (error) {
+			console.error("Error: ", error);
+			toast.error("Something went wrong")
+		}
+	}
+
+
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const isFormValid = () => {
+    if (step === 1) {
+      return email.trim() !== "" && isValidEmail(email) && agreed;
+    }
+
+    if (step === 2) {
+      return otp.trim() !== "" && otp.length === 6;
+    }
+
+    // Default for any other step
+    return false;
+  }
+
+  
+
+  switch (step) {
+    case 1:
+      return (
+        <StepOne
+          email={email}
+          setEmail={setEmail}
+          agreed={agreed}
+          setAgreed={setAgreed}
+          isFormValid={isFormValid()}
+          sending={sending}
+          handleSubmit={handleSubmit}
+        />
+      )
+
+    case 2:
+      return (
+        <StepTwo
+          email={email}
+          otp={otp}
+          setOtp={setOtp}
+          invalid={invalid}
+          setInvalid={setInvalid}
+          success={success}
+          isFormValid={isFormValid()}
+          countdown={countdown}
+          pendingResend={pendingResend}
+          handleVerify={handleVerify}
+          handleResend={handleResend}
+        />
+      )
+  }
+
+}
+export default RegisterPage
