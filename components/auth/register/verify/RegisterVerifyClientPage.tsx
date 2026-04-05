@@ -16,10 +16,14 @@ type RegisterVerifyClientProps = {
 const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl, token }: RegisterVerifyClientProps) => {
 	const [countdown, setCountdown] = useState(fetchedTtl)
 	const [otp, setOtp] = useState("")
+	const [invalid, setInvalid] = useState(false)
+	const [success, setSuccess] = useState(false)
+	const [pendingResend, setPendingResend] = useState(false)
 
 	const isFormValid = otp.trim() !== "" && otp.length === 6
 
 	const handleResend = async () => {
+		setPendingResend(true)
 		try {
 			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/resend`, {
 				headers: {
@@ -33,13 +37,43 @@ const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl, token }: RegisterV
 			setCountdown(60); // reset countdown after sending
 		} catch (error) {
 			console.error("Error resending OTP:", error);
+		} finally {
+			setPendingResend(false)
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		toast.info(otp)
+		try {
+			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/verify`, {
+				method: "POST",
+				headers: {
+					"Authorization": `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ otp })
+			});
 
+			const data = await res.json();
+
+			if (!res.ok) {
+				toast.error(data.message)
+				return
+			}
+
+			if (!data.success) {
+				setInvalid(true)
+				toast.error(data.message)
+				return
+			}
+			
+			setSuccess(true)
+			toast.success(data.message)
+
+		} catch (error) {
+			console.error("Error: ", error);
+			toast.error("Something went wrong")
+		}
 	}
 
 	useEffect(() => {
@@ -63,21 +97,28 @@ const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl, token }: RegisterV
 			<FormInput
 				value={otp}
 				name={"otp"}
-				onChange={(e) => (setOtp(e.target.value.replace(/\D/g, "").slice(0, 6)))}
+				onChange={(e) => {
+					setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+					setInvalid(false)
+				}}
 				inputMode="numeric"
 				type={"text"}
 				maxLength={6}
-				pattern="\d"
 				placeholder='012345'
 				label={"One Time Password (OTP)"}
+				error={invalid}
+				success={success}
 			/>
 
 			<Button
 				primary
 				type="submit"
-				disabled={!isFormValid}
+				disabled={!isFormValid || success}
+				className={
+					success ? "bg-green-600 text-white border-green-600" : ""
+				}
 			>
-				Verify
+				{success ? "Verified" : "Verify"}
 			</Button>
 
 			
@@ -86,7 +127,7 @@ const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl, token }: RegisterV
 				<button
 					type="button"
 					onClick={handleResend}
-					disabled={countdown > 0}
+					disabled={countdown > 0 || pendingResend || success}
 					className="font-medium text-theme-blue hover:underline hover:cursor-pointer disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed"
 				>
 					{countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}

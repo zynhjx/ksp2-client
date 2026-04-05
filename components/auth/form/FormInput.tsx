@@ -1,5 +1,4 @@
 import React from "react";
-import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
 
 type InputProps = {
@@ -13,14 +12,15 @@ type InputProps = {
   inputMode?: "numeric" | "text",
   pattern?: string,
   className?: string,
-  error?: boolean
+  error?: boolean,
+  success?: boolean
 }
 
-const FormInput = ({value, label,  onChange, type, pattern, inputMode, name, className, maxLength, placeholder, error}: InputProps) => {
+const FormInput = ({value, label, onChange, type, pattern, inputMode, name, className, maxLength, placeholder, error, success}: InputProps) => {
   return (
     <div className="space-y-2">
       <label className={twMerge("text-sm font-semibold text-gray-700",
-        error && "text-red-600"
+        error && "text-red-600", success && "text-green-600"
       )}>{label}</label>
       <input
         type={type}
@@ -32,7 +32,8 @@ const FormInput = ({value, label,  onChange, type, pattern, inputMode, name, cla
         onChange={onChange}
         placeholder={placeholder}
         className={twMerge("w-full px-4 py-3 rounded-l border border-gray-200 focus:border-theme-blue  outline-none transition",
-          error && "border-red-600",
+          error && "border-red-600 text-red-600",
+          success && "border-green-600 text-green-600",
           className
         )}
       />
