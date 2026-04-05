@@ -9,6 +9,7 @@ import FormInput from "@/components/auth/form/FormInput";
 import { EXPRESS_API_URL } from "@/lib/env";
 import Button from '@/components/Button';
 import { toast } from 'react-toastify';
+import { motion } from "framer-motion"
 
 
 // type RegisterPageProps = {
@@ -27,7 +28,12 @@ type StepOneProps = {
 
 const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid, sending}: StepOneProps) => {
     return (
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <motion.form 
+        initial={{x: 10, opacity: 0}}
+        animate={{x: 0, opacity: 1}}
+        exit={{x:-10, opacity: 0}}
+        transition={{ duration: 0.5 }}
+        onSubmit={handleSubmit} className='space-y-4'>
         <AuthCardTitle title={"Sign up with email"}/>
 
         <FormInput
@@ -63,7 +69,7 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
 
         <AuthCardFooter type={"register"} />
 
-      </form>
+      </motion.form>
     )
   }
 
@@ -84,7 +90,12 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
 
   const StepTwo = ({handleVerify, otp, setOtp, setInvalid, email, invalid, success, isFormValid, handleResend, countdown, pendingResend}: StepTwoProps) => {
     return (
-      <form onSubmit={handleVerify} className='space-y-4'>
+      <motion.form
+        initial={{x: 10, opacity: 0}}
+        animate={{x: 0, opacity: 1}}
+        exit={{x:-10, opacity: 0}}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        onSubmit={handleVerify} className='space-y-4'>
         <AuthCardTitle title={"Check your inbox"} className="mb-3"/>
 
         <p className="text-sm text-gray-700 text-center mb-4">
@@ -130,7 +141,7 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
             {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
           </button>
         </p>
-      </form>
+      </motion.form>
     )
   }
 
