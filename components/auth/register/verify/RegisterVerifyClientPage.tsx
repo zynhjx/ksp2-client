@@ -10,7 +10,7 @@ import { EXPRESS_API_URL } from "@/lib/env"
 type RegisterVerifyClientProps = {
     fetchedEmail: string,
 		fetchedTtl: number,
-		token: string
+		token: string | undefined
 }
 
 const RegisterVerifyClientPage = ({ fetchedEmail, fetchedTtl, token }: RegisterVerifyClientProps) => {

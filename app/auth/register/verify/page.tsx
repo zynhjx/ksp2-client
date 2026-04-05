@@ -19,9 +19,7 @@ export default async function VerifyLayout() {
 	}
 
 	const decoded = await res.json()
-
-	console.log(decoded)
-
+	
   return (
 		<RegisterVerifyClientPage fetchedEmail={decoded.data.email} fetchedTtl={decoded.data.ttl} token={token}/>
   );
