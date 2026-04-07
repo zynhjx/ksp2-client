@@ -63,7 +63,7 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
           primary
           disabled={!isFormValid || sending}
         >
-          {sending ? "Sending" : "Continue"}
+          {sending ? "Sending OTP..." : "Continue"}
         </Button>
 
 
@@ -169,7 +169,7 @@ const RegisterPage = () => {
   useEffect(() => {
     const getMe = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/me", {
+        const res = await fetch("http://localhost:5000/api/auth/extract-vertoken", {
           credentials: "include"
         })
 
