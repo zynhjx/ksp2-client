@@ -10,6 +10,7 @@ import { EXPRESS_API_URL } from "@/lib/env";
 import Button from '@/components/Button';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"
+import { useRouter } from 'next/navigation';
 
 
 // type RegisterPageProps = {
@@ -166,27 +167,7 @@ const RegisterPage = () => {
 	const [success, setSuccess] = useState(false)
 	const [pendingResend, setPendingResend] = useState(false)
 
-  useEffect(() => {
-    const getMe = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/auth/extract-vertoken", {
-          credentials: "include"
-        })
-
-
-        const data: MeResponse = await res.json()
-
-        setEmail(data.data?.email || "")
-        setAgreed(data.data?.email ? true : false)
-        setCountdown(data.data?.otpCooldown || 30)
-      } catch (error) {
-        console.log(error)
-      }
-      
-    }
-    
-    getMe()
-  }, [])
+  const router = useRouter()
 
   useEffect(() => {
 		if (countdown <= 0) return;
@@ -283,12 +264,7 @@ const RegisterPage = () => {
 
 			if (!res.ok) {
 				toast.error(data.message)
-				return
-			}
-
-			if (!data.success) {
-				setInvalid(true)
-				toast.error(data.message)
+        setInvalid(true)
 				return
 			}
 			
