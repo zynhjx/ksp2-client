@@ -4,11 +4,9 @@ import { jwtVerify } from "jose";
 import { EXPRESS_API_URL } from "./lib/env";
 import { data } from "framer-motion/client";
 
-const protectedPages = ["/youth", "/admin", "/sk"];
-
 // Secret for signing JWT
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-const protectedRoutes = ["/dashboard", "/admin", "/sk"];
+const protectedRoutes = ["/youth", "/admin", "/sk"];
 
 export default async function proxy(req: NextRequest) {
   console.log("PROXY RUNN")
@@ -51,7 +49,7 @@ export default async function proxy(req: NextRequest) {
         let response
         if (isAuthRoute) {
           const { payload } = await jwtVerify(data.accessToken, JWT_SECRET)
-          response = NextResponse.redirect(new URL(`/${payload.role}/dashboard`));
+          response = NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
         } else {
           response = NextResponse.next()
         } 
@@ -75,6 +73,7 @@ export default async function proxy(req: NextRequest) {
         return response;
       }
 
+      console.log(res)
       const data = await res.json()
       console.log(data)
       if (isAuthRoute) {
@@ -85,6 +84,10 @@ export default async function proxy(req: NextRequest) {
     } catch (err) {
       console.error(err)
     }
+  }
+
+  if (isProtectedRoute) {
+    return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 }
 
