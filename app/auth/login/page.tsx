@@ -1,77 +1,316 @@
-"use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { LogIn, Eye, EyeOff } from "lucide-react";
+'use client'
+
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
 import AuthCardTitle from "@/components/auth/AuthCardTitle";
 import AuthCardFooter from "@/components/auth/AuthCardFooter";
 import FormInput from "@/components/auth/form/FormInput";
+import { EXPRESS_API_URL } from "@/lib/env";
+import Button from '@/components/Button';
+import { toast } from 'react-toastify';
+import { motion } from "framer-motion"
+import { redirect, useRouter } from 'next/navigation';
+
+
+// type RegisterPageProps = {
+//     fetchedEmail?: string
+// }
+
+type StepOneProps = {
+  email: string;
+  setEmail: (v: string) => void;
+  isFormValid: boolean;
+  sending: boolean;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+}
+
+const StepOne = ({handleSubmit, email, setEmail, isFormValid, sending}: StepOneProps) => {
+    return (
+      <motion.form 
+        initial={{x: 10, opacity: 0}}
+        animate={{x: 0, opacity: 1}}
+        exit={{x:-10, opacity: 0}}
+        transition={{ duration: 0.5 }}
+        onSubmit={handleSubmit} className='space-y-4'>
+        <AuthCardTitle title={"Welcome Back!"}/>
+
+        <FormInput
+          value={email}
+          name={"email"}
+          onChange={(e) => (setEmail(e.target.value))}
+          type={"email"}
+          placeholder={"john@example.com"}
+          label={"Email Address"} />
+
+
+        <Button
+          type="submit"
+          primary
+          disabled={!isFormValid || sending}
+        >
+          {sending ? "Sending OTP..." : "Continue"}
+        </Button>
+
+
+        <AuthCardFooter type={"login"} />
+
+      </motion.form>
+    )
+  }
+
+
+  type StepTwoProps = {
+    email: string;
+    otp: string;
+    setOtp: (v: string) => void;
+    invalid: boolean;
+    setInvalid: (v: boolean) => void;
+    success: boolean;
+    isFormValid: boolean;
+    countdown: number;
+    pendingResend: boolean;
+    handleVerify: (e: React.FormEvent<HTMLFormElement>) => void;
+    handleResend: () => void;
+  }
+
+  const StepTwo = ({handleVerify, otp, setOtp, setInvalid, email, invalid, success, isFormValid, handleResend, countdown, pendingResend}: StepTwoProps) => {
+    return (
+      <motion.form
+        initial={{x: 10, opacity: 0}}
+        animate={{x: 0, opacity: 1}}
+        exit={{x:-10, opacity: 0}}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        onSubmit={handleVerify} className='space-y-4'>
+        <AuthCardTitle title={"Check your inbox"} className="mb-3"/>
+
+        <p className="text-sm text-gray-700 text-center mb-4">
+          An OTP has been sent to <span className="font-medium text-theme-blue">{email}</span>. Please check your inbox and enter it below.
+        </p>
+
+        <FormInput
+          value={otp}
+          name={"otp"}
+          onChange={(e) => {
+            setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+            setInvalid(false)
+          }}
+          inputMode="numeric"
+          type={"text"}
+          maxLength={6}
+          placeholder='012345'
+          label={"One Time Password (OTP)"}
+          error={invalid}
+          success={success}
+        />
+
+        <Button
+          primary
+          type="submit"
+          disabled={!isFormValid || success}
+          className={
+            success ? "bg-green-600 text-white border-green-600" : ""
+          }
+        >
+          {success ? "Verified" : "Verify"}
+        </Button>
+
+        
+        <p className="text-sm text-gray-700 text-center">
+          Didn&apos;t receive the code?{" "}
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={countdown > 0 || pendingResend || success}
+            className="font-medium text-theme-blue hover:underline hover:cursor-pointer disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed"
+          >
+            {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
+          </button>
+        </p>
+      </motion.form>
+    )
+  }
+
+
+
+type MeResponse = {
+  message: string,
+  data: {
+    email: string,
+    otpCooldown: number
+  } | null
+}
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("")
+  const [sending, setSending] = useState(false)
+  const [step, setStep] = useState(1)
+  const [countdown, setCountdown] = useState(0)
+	const [otp, setOtp] = useState("")
+	const [invalid, setInvalid] = useState(false)
+	const [success, setSuccess] = useState(false)
+	const [pendingResend, setPendingResend] = useState(false)
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const router = useRouter()
+
+  useEffect(() => {
+		if (countdown <= 0) return;
+
+		const interval = setInterval(() => {
+			setCountdown((prev) => prev - 1);
+		}, 1000);
+
+		return () => clearInterval(interval); // cleanup
+	}, [countdown]);
+
+  const handleResend = async () => {
+		setPendingResend(true)
+		try {
+			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/resend`, {
+        credentials: "include"
+      }
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        toast.error(errorData?.message || "Something went wrong.");
+        return; 
+      }
+
+      const data = await res.json()
+
+      if (data.success) {
+        toast.success(data.message)
+      } else {
+        toast.info(data.message)
+      }
+
+      setCountdown(data.otpCooldown)
+		} catch (error) {
+			console.error("Error resending OTP:", error);
+		} finally {
+			setPendingResend(false)
+		}
+	};
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSending(true)
+    try {
+      const res = await fetch(`${EXPRESS_API_URL}/api/auth/email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+        credentials: "include"
+      });
+
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        toast.error(errorData?.message || "Something went wrong.");
+        return; 
+      }
+
+      const data = await res.json()
+
+      if (data.success) {
+        toast.success(data.message)
+      } else {
+        toast.info(data.message)
+      }
+
+      setCountdown(data.otpCooldown)
+      
+      setStep(2)
+
+    } catch (err) {
+      console.error("Error sending request:", err);
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const handleVerify = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		try {
+			const res = await fetch(`${EXPRESS_API_URL}/api/auth/email/verify`, {
+				method: "POST",
+        credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ otp })
+			});
+
+			const data = await res.json();
+
+			if (!res.ok) {
+				toast.error(data.message)
+        setInvalid(true)
+				return
+			}
+
+			setSuccess(true)
+			toast.success(data.message)
+      router.push(`/${data.user.role}/dashboard`)
+
+		} catch (error) {
+			console.error("Error: ", error);
+			toast.error("Something went wrong")
+		}
+	}
+
+
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const isFormValid = formData.email.trim() !== "" && formData.password.trim() !== "";
+  const isFormValid = () => {
+    if (step === 1) {
+      return email.trim() !== "" && isValidEmail(email)
+    }
 
-  return (
-      <>
-        <AuthCardTitle title={"Welcome Back"} subtitle={"Sign in to your account to continue"}/>
+    if (step === 2) {
+      return otp.trim() !== "" && otp.length === 6;
+    }
 
-        <form className="space-y-4">
-          <FormInput
-            value={formData.email}
-            name={"email"}
-            onChange={handleInputChange}
-            type={"email"}
-            label={"Email Address"}
-            placeholder={"john@example.com"}/>
+    // Default for any other step
+    return false;
+  }
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-semibold text-gray-700">Password</label>
-              <a href="#" className="text-xs font-bold text-theme-blue hover:underline">Forgot password?</a>
-            </div>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="••••••••"
-                className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:border-theme-blue focus:ring-2 focus:ring-blue-100 outline-none transition"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
+  
 
-          <button
-            type="submit"
-            disabled={!isFormValid}
-            className="w-full py-4 rounded-xl bg-theme-blue text-white font-bold hover:opacity-90 transition flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Sign In
-            <LogIn size={20} />
-          </button>
+  switch (step) {
+    case 1:
+      return (
+        <StepOne
+          email={email}
+          setEmail={setEmail}
+          isFormValid={isFormValid()}
+          sending={sending}
+          handleSubmit={handleSubmit}
+        />
+      )
 
-        </form>
+    case 2:
+      return (
+        <StepTwo
+          email={email}
+          otp={otp}
+          setOtp={setOtp}
+          invalid={invalid}
+          setInvalid={setInvalid}
+          success={success}
+          isFormValid={isFormValid()}
+          countdown={countdown}
+          pendingResend={pendingResend}
+          handleVerify={handleVerify}
+          handleResend={handleResend}
+        />
+      )
+  }
 
-        <AuthCardFooter type={"login"}/>
-      </>
-  );
-};
-
-export default LoginPage;
+}
+export default LoginPage

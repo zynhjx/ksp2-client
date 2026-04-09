@@ -2,14 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 import { EXPRESS_API_URL } from "./lib/env";
-import { data } from "framer-motion/client";
 
-// Secret for signing JWT
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 const protectedRoutes = ["/youth", "/admin", "/sk"];
 
 export default async function proxy(req: NextRequest) {
-  console.log("PROXY RUNN")
   const { pathname } = req.nextUrl;
   const accessToken = req.cookies.get("accessToken")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
@@ -17,7 +14,6 @@ export default async function proxy(req: NextRequest) {
   const isAuthRoute = pathname.startsWith("/auth");
 
   if (accessToken) {
-    console.log("Access token")
     try {
       const { payload } = await jwtVerify(accessToken, JWT_SECRET);
       if (isAuthRoute) {
@@ -33,7 +29,6 @@ export default async function proxy(req: NextRequest) {
   }
 
   if (!accessToken && refreshToken) {
-    console.log("refreshtoken onle")
     try {
       const res = await fetch(`${EXPRESS_API_URL}/api/auth/refresh`, {
         method: 'POST',
@@ -43,7 +38,6 @@ export default async function proxy(req: NextRequest) {
       });
 
       if (res.ok) {
-        console.log("hi")
         const data = await res.json();
 
         let response
@@ -73,9 +67,6 @@ export default async function proxy(req: NextRequest) {
         return response;
       }
 
-      console.log(res)
-      const data = await res.json()
-      console.log(data)
       if (isAuthRoute) {
         return NextResponse.next()
       }

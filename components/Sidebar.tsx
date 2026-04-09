@@ -38,8 +38,6 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [userNavs, setUserNavs] = useState(youthNavs);
 
-  console.log(pathname)
-
 
   return (
     <aside className={clsx(

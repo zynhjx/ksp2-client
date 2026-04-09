@@ -156,7 +156,7 @@ type MeResponse = {
   } | null
 }
 
-const RegisterPage = () => {
+const AuthPage = () => {
   const [email, setEmail] = useState("")
   const [sending, setSending] = useState(false)
   const [agreed, setAgreed] = useState(false);
@@ -332,4 +332,4 @@ const RegisterPage = () => {
   }
 
 }
-export default RegisterPage
+export default AuthPage
