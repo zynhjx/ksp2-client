@@ -8,6 +8,7 @@ import Button from '@/components/Button'
 import { twMerge } from 'tailwind-merge'
 import { toast } from 'react-toastify'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from '@/components/ui/select'
+import { useRouter } from 'next/navigation'
 
 
 const months = [
@@ -74,6 +75,7 @@ const OnboardingPage = () => {
   const [education, setEducation] = useState("");
   const [employmentStatus, setEmploymentStatus] = useState("");
 
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -105,7 +107,7 @@ const OnboardingPage = () => {
         throw new Error(data.message || "Something went wrong");
       }
 
-      console.log("Success:", data);
+      router.push(`/${data.user.role}/dashboard`)
     } catch (error) {
       console.error("Error submitting form:", error);
     }
