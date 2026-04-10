@@ -5,9 +5,12 @@ import { createContext, useContext, useState } from 'react'
 type User = {
   id: string
   email: string
-  role?: string
-  status?: string
+  role: string
+  status: string
   barangay: string
+  first_name: string
+  last_name: string
+  gender: string
 }
 
 type AuthContextType = {
