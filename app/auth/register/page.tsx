@@ -49,7 +49,7 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
           <input
             type={"checkbox"}
             checked={agreed}
-            onChange={() => {setAgreed(prev => !prev)}}
+            onChange={() => {setAgreed(!agreed)}}
             className={"accent-theme-blue h-4 w-4 hover:cursor-pointer focus:outline-none"}/>
 
           <p className="text-sm text-gray-600 text-center">
@@ -159,7 +159,7 @@ type MeResponse = {
 const RegisterPage = () => {
   const [email, setEmail] = useState("")
   const [sending, setSending] = useState(false)
-  const [agreed, setAgreed] = useState(false);
+  const [agreed, setAgreed] = useState<boolean>(false);
   const [step, setStep] = useState(1)
   const [countdown, setCountdown] = useState(0)
 	const [otp, setOtp] = useState("")
@@ -275,7 +275,6 @@ const RegisterPage = () => {
 		} catch (error) {
 			console.error("Error: ", error);
 			toast.error("Something went wrong")
-      alert(error.message)
 		}
 	}
 
