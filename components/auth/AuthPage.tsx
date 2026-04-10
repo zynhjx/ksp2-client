@@ -49,7 +49,7 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
           <input
             type={"checkbox"}
             checked={agreed}
-            onChange={() => {setAgreed(prev => !prev)}}
+            onChange={() => {setAgreed(!agreed)}}
             className={"accent-theme-blue h-4 w-4 hover:cursor-pointer focus:outline-none"}/>
 
           <p className="text-sm text-gray-600 text-center">
@@ -147,15 +147,6 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
   }
 
 
-
-type MeResponse = {
-  message: string,
-  data: {
-    email: string,
-    otpCooldown: number
-  } | null
-}
-
 const AuthPage = () => {
   const [email, setEmail] = useState("")
   const [sending, setSending] = useState(false)
@@ -166,8 +157,6 @@ const AuthPage = () => {
 	const [invalid, setInvalid] = useState(false)
 	const [success, setSuccess] = useState(false)
 	const [pendingResend, setPendingResend] = useState(false)
-
-  const router = useRouter()
 
   useEffect(() => {
 		if (countdown <= 0) return;
@@ -275,7 +264,6 @@ const AuthPage = () => {
 		} catch (error) {
 			console.error("Error: ", error);
 			toast.error("Something went wrong")
-      alert(error.message)
 		}
 	}
 
