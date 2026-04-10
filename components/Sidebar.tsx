@@ -1,5 +1,4 @@
 'use client'
-import clsx from 'clsx'
 import {
   HomeIcon,
   LucideIcon,
@@ -13,6 +12,8 @@ import { useState} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { twMerge } from 'tailwind-merge';
+import { useSidebar } from "@/context/SidebarContext";
 
 const youthNavs = [
   {name: "Dashboard", icon: LucideLayoutDashboard, path: "/youth/dashboard"},
@@ -35,20 +36,20 @@ const adminNavs = [
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(true);
+  const { isOpen, toggleSidebar } = useSidebar()
   const [userNavs, setUserNavs] = useState(youthNavs);
 
 
   return (
-    <aside className={clsx(
-      "bg-theme-dark-blue text-white box-border flex flex-col",
+    <aside className={twMerge(
+      "absolute top-0 bottom-0 left-0 xl:static bg-theme-dark-blue text-white box-border flex flex-col z-50",
       isOpen ? "w-70" : "w-auto",
-      !isOpen && "max-w-18"
+      !isOpen && "max-w-18 -translate-x-full md:translate-x-0"
     )}>
-      <header className={clsx(
+      <header className={twMerge(
         "bg-transparent h-12.5 flex relative items-center p-3 box-content border-white/20 border-b"
       )}>
-        <div className={clsx(
+        <div className={twMerge(
           "relative h-10 w-20",
           !isOpen && "hidden"
         )}>
@@ -61,8 +62,8 @@ const Sidebar = () => {
             className={"ml-2"}
           />
         </div>
-        <button onClick={() => setIsOpen(!isOpen)}
-          className={clsx(
+        <button onClick={() => toggleSidebar()}
+          className={twMerge(
             "p-3 cursor-pointer hover:bg-white/10 rounded-2xl border-none",
             isOpen && "ml-auto"
           )
@@ -70,14 +71,14 @@ const Sidebar = () => {
           <SidebarIcon size={24}/>
         </button>
       </header>
-      <nav className={clsx(
+      <nav className={twMerge(
         "p-3 overflow-hidden box-border",
 
       )}>
         <ul className={"flex flex-col gap-y-3"}>
           {userNavs.map((nav: {name: string, icon: LucideIcon, path: string}) => (
             <li key={nav.name}>
-              <Link href={nav.path} className={clsx(
+              <Link href={nav.path} className={twMerge(
                 "flex gap-x-4 p-3 rounded-xl items-center",
                 pathname !== nav.path && "hover:bg-white/10",
                 pathname === nav.path && "bg-white/20"
@@ -85,7 +86,7 @@ const Sidebar = () => {
                 <nav.icon
                   size={24}
                 />
-                <span className={clsx(!isOpen && "hidden", "text-sm")}>{nav.name}</span>
+                <span className={twMerge(!isOpen && "hidden", "text-sm")}>{nav.name}</span>
                 {pathname === nav.path && isOpen && (
                   <ChevronRight size={20} color={"white"} className={"ml-auto"}/>
                 )}
@@ -95,15 +96,15 @@ const Sidebar = () => {
         </ul>
       </nav>
       <footer
-        className={clsx(
-          "mt-auto h-auto border-t border-white/20 p-3",
+        className={twMerge(
+          "hidden md:block mt-auto h-auto border-t border-white/20 p-3",
         )}
       >
-        <div className={clsx("flex",
+        <div className={twMerge("flex",
           isOpen && "gap-x-3"
         )}>
           <div className="flex rounded-full h-12 w-12 bg-blue-950 justify-center items-center font-bold">FL</div>
-          <div className={clsx(
+          <div className={twMerge(
             "flex flex-col gap-y-0.5 justify-center",
             !isOpen && "hidden",
           )}>

@@ -1,6 +1,16 @@
+'use client'
+
+import { useAuth } from "@/context/AuthContext"
+
 const Dashboard = () => {
+
+  const { user } = useAuth()
+
   return (
-    <div>dashboard</div>
+    <>
+      
+    </>
+    
   )
 }
 export default Dashboard
