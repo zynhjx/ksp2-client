@@ -7,7 +7,7 @@ type ButtonType = {
 	className?: string,
 	children: string | ReactNode,
 	primary?: boolean,
-	onClick?: (e: React.FormEvent<HTMLFormElement>) => void
+	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 const Button = ({disabled, type, className, children, primary, onClick}: ButtonType) => {
