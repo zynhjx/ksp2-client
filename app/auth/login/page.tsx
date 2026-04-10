@@ -3,7 +3,7 @@
 
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import AuthCardTitle from "@/components/auth/AuthCardTitle";
+import CardTitle from "@/components/auth/CardTitle";
 import AuthCardFooter from "@/components/auth/AuthCardFooter";
 import FormInput from "@/components/auth/form/FormInput";
 import { EXPRESS_API_URL } from "@/lib/env";
@@ -33,7 +33,7 @@ const StepOne = ({handleSubmit, email, setEmail, isFormValid, sending}: StepOneP
         exit={{x:-10, opacity: 0}}
         transition={{ duration: 0.5 }}
         onSubmit={handleSubmit} className='space-y-4'>
-        <AuthCardTitle title={"Welcome Back!"}/>
+        <CardTitle title={"Welcome Back!"}/>
 
         <FormInput
           value={email}
@@ -82,7 +82,7 @@ const StepOne = ({handleSubmit, email, setEmail, isFormValid, sending}: StepOneP
         exit={{x:-10, opacity: 0}}
         transition={{ duration: 0.3, ease: "easeOut" }}
         onSubmit={handleVerify} className='space-y-4'>
-        <AuthCardTitle title={"Check your inbox"} className="mb-3"/>
+        <CardTitle title={"Check your inbox"} className="mb-3"/>
 
         <p className="text-sm text-gray-700 text-center mb-4">
           An OTP has been sent to <span className="font-medium text-theme-blue">{email}</span>. Please check your inbox and enter it below.

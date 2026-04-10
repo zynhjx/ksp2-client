@@ -1,12 +1,13 @@
 import { ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
+import React from "react"
 type ButtonType = {
 	disabled?: boolean,
 	type?: "submit" | "reset" | "button" | undefined,
 	className?: string,
 	children: string | ReactNode,
 	primary?: boolean,
-	onClick?: () => void
+	onClick?: (e: React.FormEvent<HTMLFormElement>) => void
 }
 
 const Button = ({disabled, type, className, children, primary, onClick}: ButtonType) => {

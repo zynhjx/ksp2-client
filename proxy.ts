@@ -12,14 +12,25 @@ export default async function proxy(req: NextRequest) {
   const refreshToken = req.cookies.get("refreshToken")?.value;
   const isProtectedRoute = protectedRoutes.some((r) => pathname.startsWith(r));
   const isAuthRoute = pathname.startsWith("/auth");
+  const isOnboardingRoute = pathname.startsWith("/onboarding")
 
   if (accessToken) {
     try {
       const { payload } = await jwtVerify(accessToken, JWT_SECRET);
       if (isAuthRoute) {
+        if (payload.status === "pending") {
+          return NextResponse.redirect(new URL('/onboarding', req.url));
+        }
         return NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
       } else if (isProtectedRoute) {
         return NextResponse.next();
+      } else if (isOnboardingRoute) {
+        console.log("first")
+        if (payload.status === "pending") {
+          console.log("pending")
+          return NextResponse.next();
+        }
+        return NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
       }
     } catch (error) {
       console.log(error)
@@ -40,10 +51,20 @@ export default async function proxy(req: NextRequest) {
       if (res.ok) {
         const data = await res.json();
 
+        const { payload } = await jwtVerify(data.accessToken, JWT_SECRET)
+
         let response
         if (isAuthRoute) {
-          const { payload } = await jwtVerify(data.accessToken, JWT_SECRET)
-          response = NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
+          if (payload.status === "pending") {
+            response = NextResponse.redirect(new URL('/onboarding', req.url));
+          } else {
+            response = NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
+          }
+        } else if (isOnboardingRoute) {
+          if (payload.status === "pending") {
+            return NextResponse.next();
+          }
+          return NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
         } else {
           response = NextResponse.next()
         } 
@@ -88,6 +109,7 @@ export const config = {
     "/auth/:path*",
     "/youth/:path*",
     "/sk/:path*",
-    "/admin/:path*"
+    "/admin/:path*",
+    "/onboarding"
   ],
 };

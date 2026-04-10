@@ -3,7 +3,7 @@
 
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import AuthCardTitle from "@/components/auth/AuthCardTitle";
+import AuthCardTitle from "@/components/auth/CardTitle";
 import AuthCardFooter from "@/components/auth/AuthCardFooter";
 import FormInput from "@/components/auth/form/FormInput";
 import { EXPRESS_API_URL } from "@/lib/env";

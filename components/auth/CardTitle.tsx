@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 import React from "react";
 
 
-const AuthCardTitle = ({title, subtitle, className}: {title: string, subtitle?: string, className?: string}) => {
+const CardTitle = ({title, subtitle, className}: {title: string, subtitle?: string, className?: string}) => {
   return (
     <div className={twMerge("mb-6 text-center",
       className
@@ -12,4 +12,4 @@ const AuthCardTitle = ({title, subtitle, className}: {title: string, subtitle?: 
     </div>
   )
 }
-export default AuthCardTitle
+export default CardTitle
