@@ -1,4 +1,5 @@
 'use client'
+
 import {
   HomeIcon,
   LucideIcon,
@@ -14,6 +15,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { twMerge } from 'tailwind-merge';
 import { useSidebar } from "@/context/SidebarContext";
+import { useAuth } from "@/context/AuthContext";
 
 const youthNavs = [
   {name: "Dashboard", icon: LucideLayoutDashboard, path: "/youth/dashboard"},
@@ -37,8 +39,16 @@ const adminNavs = [
 const Sidebar = () => {
   const pathname = usePathname();
   const { isOpen, toggleSidebar } = useSidebar()
-  const [userNavs, setUserNavs] = useState(youthNavs);
-
+  const { user } = useAuth()
+  const userNavs = () => {
+    if (pathname.startsWith("/youth")) {
+      return youthNavs
+    } else if (pathname.startsWith("/sk")) {
+      return skNavs
+    } else {
+      return adminNavs
+    }
+  }
 
   return (
     <aside className={twMerge(
@@ -76,7 +86,7 @@ const Sidebar = () => {
 
       )}>
         <ul className={"flex flex-col gap-y-3"}>
-          {userNavs.map((nav: {name: string, icon: LucideIcon, path: string}) => (
+          {userNavs().map((nav: {name: string, icon: LucideIcon, path: string}) => (
             <li key={nav.name}>
               <Link href={nav.path} className={twMerge(
                 "flex gap-x-4 p-3 rounded-xl items-center",
@@ -108,8 +118,8 @@ const Sidebar = () => {
             "flex flex-col gap-y-0.5 justify-center",
             !isOpen && "hidden",
           )}>
-            <span className={"text-sm"}>First and Last Name</span>
-            <span className={"text-xs text-gray-300"}>firstandlastname@example.com</span>
+            <span className={"text-sm"}>{`${user?.first_name} ${user?.last_name}`}</span>
+            <span className={"text-xs text-gray-300"}>{user?.email}</span>
           </div>
         </div>
       </footer>

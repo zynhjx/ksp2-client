@@ -145,16 +145,6 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
     )
   }
 
-
-
-type MeResponse = {
-  message: string,
-  data: {
-    email: string,
-    otpCooldown: number
-  } | null
-}
-
 const RegisterPage = () => {
   const [email, setEmail] = useState("")
   const [sending, setSending] = useState(false)
@@ -269,7 +259,7 @@ const RegisterPage = () => {
 
 			setSuccess(true)
 			toast.success(data.message)
-      redirect(`/${data.user.role}/dashboard`)
+      router.push(`/${data.user.role}/dashboard`)
 
 		} catch (error) {
 			console.error("Error: ", error);
