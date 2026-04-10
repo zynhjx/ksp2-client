@@ -4,6 +4,7 @@ import { jwtVerify } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 const protectedRoutes = ["/youth", "/admin", "/sk"];
+const isProd = process.env.NODE_ENV === 'production'
 
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -70,18 +71,20 @@ export default async function proxy(req: NextRequest) {
 
         response.cookies.set('accessToken', data.accessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
+          secure: isProd,
+          sameSite: isProd ? "none" : "lax",
           path: '/',
           maxAge: 15 * 60, // seconds in Next.js, not ms
+          ...(isProd && { domain: ".kabataanprofile.com" })
         });
 
         response.cookies.set('refreshToken', data.refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
+          secure: isProd,
+          sameSite: isProd ? "none" : "lax",
           path: '/',
           maxAge: 7 * 24 * 60 * 60,
+          ...(isProd && { domain: ".kabataanprofile.com" })
         });
 
         return response;

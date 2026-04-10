@@ -269,7 +269,7 @@ const RegisterPage = () => {
 
 			setSuccess(true)
 			toast.success(data.message)
-      redirect(`/youth/dashboard`)
+      redirect(`/${data.user.role}/dashboard`)
 
 		} catch (error) {
 			console.error("Error: ", error);
