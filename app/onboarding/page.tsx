@@ -8,7 +8,6 @@ import Button from '@/components/Button'
 import { twMerge } from 'tailwind-merge'
 import { toast } from 'react-toastify'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from '@/components/ui/select'
-import { EXPRESS_API_URL } from '@/lib/env'
 
 
 const months = [
@@ -91,7 +90,7 @@ const OnboardingPage = () => {
     };
 
     try {
-      const res = await fetch(`${EXPRESS_API_URL}/api/onboarding`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/onboarding`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

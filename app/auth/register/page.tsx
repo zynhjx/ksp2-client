@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react'
 import AuthCardTitle from "@/components/auth/CardTitle";
 import AuthCardFooter from "@/components/auth/AuthCardFooter";
 import FormInput from "@/components/auth/form/FormInput";
-import { EXPRESS_API_URL } from "@/lib/env";
 import Button from '@/components/Button';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"
@@ -182,7 +181,7 @@ const RegisterPage = () => {
   const handleResend = async () => {
 		setPendingResend(true)
 		try {
-			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/resend`, {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/register/email/resend`, {
         credentials: "include"
       }
       );
@@ -251,7 +250,7 @@ const RegisterPage = () => {
   const handleVerify = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		try {
-			const res = await fetch(`${EXPRESS_API_URL}/api/auth/email/verify`, {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/email/verify`, {
 				method: "POST",
         credentials: "include",
 				headers: {
