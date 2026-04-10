@@ -1,16 +1,14 @@
 
 'use client'
 
-import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import CardTitle from "@/components/auth/CardTitle";
 import AuthCardFooter from "@/components/auth/AuthCardFooter";
 import FormInput from "@/components/auth/form/FormInput";
-import { EXPRESS_API_URL } from "@/lib/env";
 import Button from '@/components/Button';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 
 // type RegisterPageProps = {
@@ -132,15 +130,6 @@ const StepOne = ({handleSubmit, email, setEmail, isFormValid, sending}: StepOneP
   }
 
 
-
-type MeResponse = {
-  message: string,
-  data: {
-    email: string,
-    otpCooldown: number
-  } | null
-}
-
 const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [sending, setSending] = useState(false)
@@ -166,7 +155,7 @@ const LoginPage = () => {
   const handleResend = async () => {
 		setPendingResend(true)
 		try {
-			const res = await fetch(`${EXPRESS_API_URL}/api/auth/register/email/resend`, {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/register/email/resend`, {
         credentials: "include"
       }
       );
@@ -197,7 +186,7 @@ const LoginPage = () => {
     e.preventDefault();
     setSending(true)
     try {
-      const res = await fetch(`${EXPRESS_API_URL}/api/auth/email`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -235,7 +224,7 @@ const LoginPage = () => {
   const handleVerify = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		try {
-			const res = await fetch(`${EXPRESS_API_URL}/api/auth/email/verify`, {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/email/verify`, {
 				method: "POST",
         credentials: "include",
 				headers: {

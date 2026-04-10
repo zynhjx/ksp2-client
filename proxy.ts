@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
-import { EXPRESS_API_URL } from "./lib/env";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 const protectedRoutes = ["/youth", "/admin", "/sk"];
@@ -41,7 +40,7 @@ export default async function proxy(req: NextRequest) {
 
   if (!accessToken && refreshToken) {
     try {
-      const res = await fetch(`${EXPRESS_API_URL}/api/auth/refresh`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/refresh`, {
         method: 'POST',
         headers: {
           Cookie: `refreshToken=${refreshToken}`,
