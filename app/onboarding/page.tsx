@@ -107,13 +107,13 @@ const OnboardingPage = () => {
       }
 
       console.log("Success:", data);
-    } catch (error: any) {
-      console.error("Error submitting form:", error.message);
+    } catch (error) {
+      console.error("Error submitting form:", error);
     }
   };
 
 
-  const handleNext = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleNext = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     if (!isFormValid()) {
       return toast.error("inputs are not valid")
@@ -122,7 +122,7 @@ const OnboardingPage = () => {
     setStep(prev => prev + 1)
   }
 
-  const handlePrev = (e: React.FormEvent<HTMLFormElement>) => {
+  const handlePrev = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     setStep(prev => prev - 1)
   }
@@ -299,7 +299,8 @@ const OnboardingPage = () => {
             {step !== 1 && (
               <Button 
                 className='flex-1'
-                type='button' onClick={handlePrev}>Prev</Button>
+                type='button' 
+                onClick={handlePrev}>Prev</Button>
             )}
 
             <Button 
