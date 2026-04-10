@@ -213,7 +213,7 @@ const RegisterPage = () => {
     e.preventDefault();
     setSending(true)
     try {
-      const res = await fetch(`${EXPRESS_API_URL}/api/auth/email`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
