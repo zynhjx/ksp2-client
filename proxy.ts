@@ -97,7 +97,7 @@ export default async function proxy(req: NextRequest) {
     }
   }
 
-  if (isProtectedRoute) {
+  if (isProtectedRoute || isOnboardingRoute) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 }
