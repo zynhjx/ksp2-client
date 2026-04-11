@@ -107,9 +107,10 @@ const OnboardingPage = () => {
         throw new Error(data.message || "Something went wrong");
       }
 
-      router.push(`/${data.user.role}/dashboard`)
+      return router.push(`/${data.user.role}/dashboard`)
     } catch (error) {
       console.error("Error submitting form:", error);
+      toast.error("Failed to submit your information. Please try again.");
     }
   };
 
