@@ -23,23 +23,24 @@ export default async function proxy(req: NextRequest) {
         }
         return NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
       } else if (isProtectedRoute) {
+        if (payload.status === "pending") {
+          return NextResponse.redirect(new URL('/onboarding', req.url));
+        }
         return NextResponse.next();
       } else if (isOnboardingRoute) {
-        console.log("first")
         if (payload.status === "pending") {
-          console.log("pending")
           return NextResponse.next();
         }
         return NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
+      } else {
+        return NextResponse.next();
       }
     } catch (error) {
       console.log(error)
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
     
-  }
-
-  if (!accessToken && refreshToken) {
+  } else if (!accessToken && refreshToken) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/refresh`, {
         method: 'POST',
@@ -96,7 +97,8 @@ export default async function proxy(req: NextRequest) {
 
       return NextResponse.redirect(new URL("/auth/login", req.url));
     } catch (err) {
-      console.error(err)
+      console.error(err);
+      return NextResponse.redirect(new URL("/auth/login", req.url));
     }
   }
 
