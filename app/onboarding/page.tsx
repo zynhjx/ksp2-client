@@ -107,7 +107,13 @@ const OnboardingPage = () => {
         throw new Error(data.message || "Something went wrong");
       }
 
-      return router.push(`/${data.user.role}/dashboard`)
+      console.log("reddddd")
+      if (data.user.status === "pending") {
+        return router.push(`/onboarding`)
+      } else {
+        return router.push(`/${data.user.role}/dashboard`)
+      }
+      
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to submit your information. Please try again.");

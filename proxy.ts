@@ -37,6 +37,9 @@ export default async function proxy(req: NextRequest) {
       }
     } catch (error) {
       console.log(error)
+      if (isAuthRoute) {
+        return NextResponse.next()
+      }
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
     
