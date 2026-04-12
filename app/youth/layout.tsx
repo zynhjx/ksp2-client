@@ -49,7 +49,7 @@ const Layout = async ({children}: {children: ReactNode} ) => {
       <div className="w-screen h-screen flex bg-theme-dark-blue">
       <SidebarProvider>
         <Sidebar/>
-        <main className="pt-25 md:pt-6 md:ml-18 xl:ml-0 bg-green-50 flex-1 p-6 xl:rounded-tl-4xl overflow-y-scroll">
+        <main className="pt-25 md:pt-6 md:ml-18 xl:ml-0 bg-theme-white flex-1 p-8 xl:rounded-tl-4xl overflow-y-scroll">
           <Overlay/>
           <MobileHeader/>
           {children}

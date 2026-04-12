@@ -107,13 +107,8 @@ const OnboardingPage = () => {
         throw new Error(data.message || "Something went wrong");
       }
 
-      console.log("reddddd")
-      if (data.user.status === "pending") {
-        return router.push(`/onboarding`)
-      } else {
-        return router.push(`/${data.user.role}/dashboard`)
-      }
-      
+      return router.replace(`/${data.user.role}/dashboard`)
+
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to submit your information. Please try again.");
@@ -124,7 +119,7 @@ const OnboardingPage = () => {
   const handleNext = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     if (!isFormValid()) {
-      return toast.error("inputs are not valid")
+      toast.error("Please complete all required fields correctly.")
     }
 
     setStep(prev => prev + 1)
@@ -135,13 +130,28 @@ const OnboardingPage = () => {
     setStep(prev => prev - 1)
   }
 
+  const isValidDate = () => {
+    const m = Number(month)
+    const d = Number(day)
+    const y = Number(year)
+
+    if (!m || !d || !y) return false
+    if (m < 1 || m > 12) return false
+    if (d < 1 || d > 31) return false
+    if (y < 1900 || y > new Date().getFullYear()) return false
+
+    return true
+  }
+
+  const isValidPHNumber = (num: string) => /^09\d{9}$/.test(num)
+
   const isFormValid = () => {
     switch (step) {
       case 1:
-        return firstName.trim() !== "" && lastName.trim() !== "" && month.trim() !== "" && day.trim() !== "" && day.length === 2 && year.trim() !== "" && year.length === 4
+        return firstName.trim() !== "" && lastName.trim() !== "" && isValidDate() &&  gender.trim() !== ""
 
       case 2:
-        return contact.trim() !== "" && contact.length >= 11 && barangay.trim() !== "" && education.trim() !== "" && employmentStatus.trim() !== ""
+        return isValidPHNumber(contact) && barangay.trim() !== "" && education.trim() !== "" && employmentStatus.trim() !== ""
       default:
         return false
     }

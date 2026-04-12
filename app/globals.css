@@ -8,6 +8,8 @@
   --color-theme-blue: #160076;
   --color-theme-dark-blue: #0f172a;
   --color-theme-white: #F9FAFB;
+  --color-theme-card-white: #FFFFFF;
+  --color-theme-card-border: #E5E7EB;
 }
 
 @keyframes fade-in {

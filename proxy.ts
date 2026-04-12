@@ -26,6 +26,21 @@ export default async function proxy(req: NextRequest) {
         if (payload.status === "pending") {
           return NextResponse.redirect(new URL('/onboarding', req.url));
         }
+
+        const rolePathMap: Record<string, string> = {
+          admin: "/admin",
+          sk: "/sk",
+          youth: "/youth",
+        };
+
+        const expectedBasePath = rolePathMap[payload.role as string];
+
+        if (!pathname.startsWith(expectedBasePath)) {
+          return NextResponse.redirect(
+            new URL(`${expectedBasePath}/dashboard`, req.url)
+          );
+        }
+
         return NextResponse.next();
       } else if (isOnboardingRoute) {
         if (payload.status === "pending") {
@@ -76,16 +91,16 @@ export default async function proxy(req: NextRequest) {
         response.cookies.set('accessToken', data.accessToken, {
           httpOnly: true,
           secure: isProd,
-          sameSite: isProd ? "none" : "lax",
+          sameSite: "lax",
           path: '/',
-          maxAge: 15 * 60, // seconds in Next.js, not ms
+          maxAge: 5 * 60,
           ...(isProd && { domain: ".kabataanprofile.com" })
         });
 
         response.cookies.set('refreshToken', data.refreshToken, {
           httpOnly: true,
           secure: isProd,
-          sameSite: isProd ? "none" : "lax",
+          sameSite: "lax",
           path: '/',
           maxAge: 7 * 24 * 60 * 60,
           ...(isProd && { domain: ".kabataanprofile.com" })

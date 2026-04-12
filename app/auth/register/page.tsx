@@ -259,7 +259,7 @@ const RegisterPage = () => {
 
 			setSuccess(true)
 			toast.success(data.message)
-      router.push(`/${data.user.role}/dashboard`)
+      router.replace(`/${data.user.role}/dashboard`)
 
 		} catch (error) {
 			console.error("Error: ", error);

@@ -17,6 +17,14 @@ import { twMerge } from 'tailwind-merge';
 import { useSidebar } from "@/context/SidebarContext";
 import { useAuth } from "@/context/AuthContext";
 
+const toTitleCase = (str: string = "") => {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
 const youthNavs = [
   {name: "Dashboard", icon: LucideLayoutDashboard, path: "/youth/dashboard"},
   {name: "Programs", icon: Calendar, path: "/youth/programs"},
@@ -107,18 +115,18 @@ const Sidebar = () => {
       </nav>
       <footer
         className={twMerge(
-          "hidden md:block mt-auto h-auto border-t border-white/20 p-3",
+          "hidden md:block mt-auto h-auto border-t border-white/20 p-4",
         )}
       >
         <div className={twMerge("flex",
           isOpen && "gap-x-3"
         )}>
-          <div className="flex rounded-full h-12 w-12 bg-blue-950 justify-center items-center font-bold">FL</div>
+          <div className="flex rounded-lg h-10 w-10 bg-blue-950 hover:cursor-pointer justify-center items-center text-base font-bold">F</div>
           <div className={twMerge(
-            "flex flex-col gap-y-0.5 justify-center",
+            "flex flex-col justify-center",
             !isOpen && "hidden",
           )}>
-            <span className={"text-sm"}>{`${user?.first_name} ${user?.last_name}`}</span>
+            <span className={"text-sm"}>{`${toTitleCase(user?.first_name)} ${toTitleCase(user?.last_name)}`}</span>
             <span className={"text-xs text-gray-300"}>{user?.email}</span>
           </div>
         </div>
