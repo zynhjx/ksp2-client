@@ -3,7 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   devIndicators: false,
-  allowedDevOrigins: ["192.168.8.3"]
+  allowedDevOrigins: [
+    "192.168.8.3",
+    "kabataanprofile.test",
+    "sk.kabataanprofile.test",
+    "admin.kabataanprofile.test"
+  ]
 };
 
 export default nextConfig;

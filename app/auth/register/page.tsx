@@ -221,6 +221,7 @@ const RegisterPage = () => {
       const data = await res.json()
 
       if (data.success) {
+        console.log(data)
         toast.success(data.message)
       } else {
         toast.info(data.message)

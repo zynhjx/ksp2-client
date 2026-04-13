@@ -97,7 +97,7 @@ export default async function proxy(req: NextRequest) {
           sameSite: "lax",
           path: '/',
           maxAge: 5 * 60,
-          ...(isProd && { domain: ".kabataanprofile.com" })
+          domain: isProd ? "kabataanprofile.com" : "kabataanprofile.test"
         });
 
         response.cookies.set('refreshToken', data.refreshToken, {
@@ -106,7 +106,7 @@ export default async function proxy(req: NextRequest) {
           sameSite: "lax",
           path: '/',
           maxAge: 7 * 24 * 60 * 60,
-          ...(isProd && { domain: ".kabataanprofile.com" })
+          domain: isProd ? "kabataanprofile.com" : "kabataanprofile.test"
         });
 
         return response;
