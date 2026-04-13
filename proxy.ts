@@ -52,13 +52,16 @@ export default async function proxy(req: NextRequest) {
       }
     } catch (error) {
       console.log(error)
-      if (isAuthRoute) {
-        return NextResponse.next()
-      }
-      return NextResponse.redirect(new URL("/auth/login", req.url));
+      console.log("accessToken failed")
+      // if (isAuthRoute) {
+      //   return NextResponse.next()
+      // }
+      // return NextResponse.redirect(new URL("/auth/login", req.url));
     }
     
-  } else if (!accessToken && refreshToken) {
+  }
+  
+  if (refreshToken) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/refresh`, {
         method: 'POST',

@@ -76,20 +76,13 @@ const LandingPage = () => {
                     </div>
 
                     <div className="flex flex-col items-center text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-theme-blue text-sm font-bold mb-8 animate-fade-in">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                            </span>
-                            Now supporting all West Coast Barangays
-                        </div>
 
                         <h1 className="text-5xl md:text-7xl  tracking-tight font-bold text-gray-900 mb-8 max-w-4xl leading-[1.1]">
-                            The Future of <span className="text-theme-blue">Youth Data</span> Management
+                            Your Community. <span className="text-theme-blue">Your Future.</span> Your Profile.
                         </h1>
 
                         <p className="text-xl text-gray-600 max-w-2xl mb-12 leading-relaxed">
-                            A comprehensive Youth Profiling System and PYDP Implementation Platform designed specifically for Sangguniang Kabataan officials.
+                            Register as a youth member in your barangay, make your voice heard, and access programs and opportunities built just for you.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
@@ -121,26 +114,26 @@ const LandingPage = () => {
                 </Section>
 
                 {/* Impact/Stats Section */}
-                {/*<Section id="impact" className="bg-gray-50/50 border-y border-gray-100">*/}
-                {/*    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center">*/}
-                {/*        <StatItem label="Registered Youth" value="12k+" />*/}
-                {/*        <StatItem label="Barangays" value="48" />*/}
-                {/*        <StatItem label="PYDP Projects" value="150+" />*/}
-                {/*        <StatItem label="Satisfaction" value="99%" />*/}
-                {/*    </div>*/}
-                {/*</Section>*/}
+                {/* <Section id="impact" className="bg-gray-200/50 border-y border-gray-100">
+                   <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center">
+                       <StatItem label="Registered Youth" value="12k+" />
+                       <StatItem label="Barangays" value="48" />
+                       <StatItem label="PYDP Projects" value="150+" />
+                       <StatItem label="Satisfaction" value="99%" />
+                   </div>
+                </Section> */}
 
                 {/* Features Section */}
                 <Section id="features">
                     <div className="flex flex-col items-center mb-16 text-center">
-                        <h2 className="text-3xl md:text-5xl  font-bold text-gray-900 mb-6">Built for Youth Leaders</h2>
+                        <h2 className="text-3xl md:text-5xl  font-bold text-gray-900 mb-6">Why Join us?</h2>
                         <div className="w-20 h-1.5 bg-theme-blue rounded-full mb-6"></div>
                         <p className="text-gray-600 max-w-2xl text-lg">
-                            Everything you need to manage your community, monitor progress, and make data-driven decisions for your constituents.
+                            Being registered means you&apos;re counted, heard, and connected to programs that directly benefit you and your community.
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8">
+                    <div className="grid md:grid-cols-2 gap-8">
                         <FeatureCard
                             icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>}
                             title="Statistical Profiling"
@@ -148,30 +141,53 @@ const LandingPage = () => {
                         />
                         <FeatureCard
                             icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>}
-                            title="PYDP Management"
-                            description="Track your Local Youth Development Plan implementation with milestones and resource tracking."
+                            title="PYDP Tracking"
+                            description="Monitor youth development programs, activities, and participant engagement."
                         />
                         <FeatureCard
                             icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>}
-                            title="Bank-Grade Security"
-                            description="We use enterprise-level encryption to ensure all constituent data remains private and secure."
+                            title="Secure Access"
+                            description="Role-based authentication for SK officials with data protection."
                         />
-                        <FeatureCard
+                        {/* <FeatureCard
                             icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>}
                             title="Automated Reporting"
-                            description="Generate DILG-compliant reports with a single click, saving hours of manual paperwork."
-                        />
+                            description="Generate reports with a single click, saving hours of manual paperwork."
+                        /> */}
                         <FeatureCard
                             icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>}
                             title="Community Feedback"
                             description="Integrated survey tools to hear directly from the youth about your projects and initiatives."
                         />
-                        <FeatureCard
+                        {/* <FeatureCard
                             icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>}
                             title="Rapid Deployment"
                             description="Get your barangay set up and running in less than 30 minutes with our easy onboarding."
-                        />
+                        /> */}
                     </div>
+
+                    {/* <div className="grid md:grid-cols-2 gap-8">
+                        <FeatureCard
+                            icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>}
+                            title="Your Own Digital Profile"
+                            description="Create and manage your personal youth profile that represents you in your barangay's records — all in one place."
+                        />
+                        <FeatureCard
+                            icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>}
+                            title="Access Programs & Opportunities"
+                            description="Stay updated on livelihood, scholarship, sports, and community programs available for the youth in your area."
+                        />
+                        <FeatureCard
+                            icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>}
+                            title="Be Heard by Your Leaders"
+                            description="Share feedback on programs and initiatives directly with your SK officials so decisions are made with you in mind."
+                        />
+                        <FeatureCard
+                            icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>}
+                            title="Safe & Private"
+                            description="Your personal information is protected with enterprise-level security. Only authorized officials can access your data."
+                        />
+                    </div> */}
                 </Section>
 
                 {/* CTA Section */}
@@ -180,9 +196,9 @@ const LandingPage = () => {
                     <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-blue-400/20 rounded-full blur-[100px]"></div>
 
                     <div className="flex flex-col items-center text-center relative z-10 py-10">
-                        <h2 className="text-3xl md:text-5xl  mb-8 font-bold max-w-3xl leading-tight">Ready to transform your youth governance?</h2>
+                        <h2 className="text-3xl md:text-5xl  mb-8 font-bold max-w-3xl leading-tight">Don&apos;t wait to be part of something bigger.</h2>
                         <p className="text-xl text-blue-100 mb-12 max-w-2xl">
-                            Join over 40 barangays already using the Kabataan Statistical Profile to serve their communities better.
+                            Join barangays using the Kabataan Statistical Profile to plan smarter for their communities.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
                             <Link href="/auth/register" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">

@@ -7,7 +7,7 @@ type TitleProps = {
 };
 
 const Title = ({ children, className }: TitleProps) => {
-  return <h1 className={twMerge("font-bold text-2xl text-theme-dark-blue mb-4",
+  return <h1 className={twMerge("font-bold text-2xl text-theme-blue mb-4",
     className
   )}>{children}</h1>;
 };

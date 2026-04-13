@@ -46,17 +46,17 @@ const Layout = async ({children}: {children: ReactNode} ) => {
 
   return (
     <AuthProvider initialUser={user}>
-      <div className="w-screen h-screen flex bg-theme-dark-blue">
-      <SidebarProvider>
-        <Sidebar/>
-        <main className="pt-25 md:pt-6 md:ml-18 xl:ml-0 bg-theme-white flex-1 p-8 xl:rounded-tl-4xl overflow-y-scroll">
-          <Overlay/>
-          <MobileHeader/>
-          {children}
-        </main>
-      </SidebarProvider>
-      
-    </div>
+      <div className="w-screen h-screen bg-white flex">
+        <SidebarProvider>
+          <Sidebar/>
+          <main className="pt-25 md:pt-6 md:ml-18 xl:ml-0 bg-theme-white md:rounded-tl-[36px] flex-1 p-8 overflow-y-scroll">
+            <Overlay/>
+            <MobileHeader/>
+            {children}
+          </main>
+        </SidebarProvider>
+        
+      </div>
     </AuthProvider>
     
 

@@ -2,11 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme {
   --color-theme-blue: #160076;
-  --color-theme-dark-blue: #0f172a;
+  --color-theme-dark-blue: #223e9e;
   --color-theme-white: #F9FAFB;
   --color-theme-card-white: #FFFFFF;
   --color-theme-card-border: #E5E7EB;

@@ -5,7 +5,7 @@ import Link from "next/link";
 const Footer = () => {
   return (
     <>
-      <footer className="bg-white py-20 px-6 border-t border-gray-100 flex justify-center items-center">
+      {/* <footer className="bg-white py-20 px-6 border-t border-gray-100 flex justify-center items-center">
         <div className="w-full max-w-7xl grid md:grid-cols-4 gap-12 md:gap-8">
           <div className="col-span-1 md:col-span-1 text-center md:text-left">
             <div className="flex justify-center md:justify-start">
@@ -106,7 +106,7 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-      </footer>
+      </footer> */}
       <div className="py-8 bg-gray-50 text-center text-xs text-gray-400 font-medium tracking-wide uppercase border-t border-gray-100">
         &copy; {new Date().getFullYear()} Kabataan Statistical Profile. All rights reserved.
       </div>

@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge'
 import { toast } from 'react-toastify'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
+import Swal from "sweetalert2";
 
 
 const months = [
@@ -64,6 +65,8 @@ const employmentStatuses = [
 
 const OnboardingPage = () => {
   const [step, setStep] = useState(1)
+  const [submitPending, setSubmitPending] = useState(false)
+  const [feedbackIsOpen, setFeedbackIsOpen] = useState(false)
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [month, setMonth] = useState("");
@@ -90,8 +93,10 @@ const OnboardingPage = () => {
       education,
       employmentStatus
     };
+    
 
     try {
+      setSubmitPending(true)
       const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/onboarding`, {
         method: "POST",
         headers: {
@@ -107,11 +112,21 @@ const OnboardingPage = () => {
         throw new Error(data.message || "Something went wrong");
       }
 
-      return router.replace(`/${data.user.role}/dashboard`)
+      Swal.fire({
+        title: "Success!",
+        text: "Profile completed",
+        icon: "success",
+        timer: 1200,
+        showConfirmButton: false,
+      }).then(() => {
+        router.replace(`/${data.user.role}/dashboard`);
+      });
 
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to submit your information. Please try again.");
+    } finally {
+      setSubmitPending(false)
     }
   };
 
@@ -323,7 +338,7 @@ const OnboardingPage = () => {
 
             <Button 
               className='flex-2'
-              primary type={step !== 2 ? 'button' : 'submit'} disabled={!isFormValid()} onClick={step !== 2 ? handleNext : undefined}>
+              primary type={step !== 2 ? 'button' : 'submit'} disabled={!isFormValid() || (step === 2 && submitPending)} onClick={step !== 2 ? handleNext : undefined}>
                 {step !== 2 ? "Next" : "Submit"}
               </Button>
           </div>
