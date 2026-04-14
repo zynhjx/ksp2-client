@@ -15,7 +15,7 @@ type FilterType = {
   options: string[]
 }
 
-type TitleWithSearchBarType = {
+type PageHeaderType = {
   title: string
   subtitle?: string
   filter?: FilterType[]
@@ -27,7 +27,7 @@ type TitleWithSearchBarType = {
   setSearch: React.Dispatch<React.SetStateAction<string>>
 }
 
-const TitleWithSearchBar = ({
+const PageHeader = ({
     title, 
     subtitle, 
     filter, 
@@ -37,7 +37,7 @@ const TitleWithSearchBar = ({
     searchPlaceholder,
     search,
     setSearch
-  }: TitleWithSearchBarType) => {
+  }: PageHeaderType) => {
 
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({})
 
@@ -49,7 +49,7 @@ const TitleWithSearchBar = ({
     <div className="flex flex-col mb-8">
       <div className="flex mb-6">
         <div className="flex flex-col space-y-1">
-          <h1 className={twMerge("font-bold text-2xl text-theme-dark-blue")}>
+          <h1 className={twMerge("font-bold text-3xl text-theme-dark-blue")}>
             {title}
           </h1>
           {subtitle && (
@@ -106,4 +106,4 @@ const TitleWithSearchBar = ({
   )
 }
 
-export default TitleWithSearchBar
+export default PageHeader

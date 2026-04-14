@@ -28,7 +28,7 @@ export default async function proxy(req: NextRequest) {
   const isRoleBasedRoute = roleBasedRoute.some((route) => pathname === route);
   const isAuthRoute = pathname.startsWith("/auth");
   const isOnboardingRoute = pathname.startsWith("/onboarding")
-  const requiresAuth = isProtectedRoute || isRoleBasedRoute || isAuthRoute;
+  const requiresAuth = isProtectedRoute || isAuthRoute;
   const host =
     req.headers.get("x-forwarded-host") ||
     req.headers.get("host") ||
@@ -38,8 +38,6 @@ export default async function proxy(req: NextRequest) {
   const subdomain = parts.length > 2 ? parts[0] : null;
   const url = req.nextUrl.clone();
 
-  console.log(url.pathname)
-  console.log(hostname)
 
   if (requiresAuth) {
     if (accessToken) {
@@ -54,7 +52,7 @@ export default async function proxy(req: NextRequest) {
         }
 
         if (isAuthRoute) {
-          return NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
+          return NextResponse.redirect(new URL(`/dashboard`, req.url));
         }
 
       } catch (error) {
@@ -100,7 +98,7 @@ export default async function proxy(req: NextRequest) {
           }
 
           if (isAuthRoute) {
-            response = NextResponse.redirect(new URL(`/${payload.role}/dashboard`, req.url));
+            response = NextResponse.redirect(new URL(`/dashboard`, req.url));
           } else if (isProtectedRoute) {
             response = NextResponse.next();
           }
@@ -154,6 +152,7 @@ export default async function proxy(req: NextRequest) {
 
     return NextResponse.rewrite(url)
   }
+  console.log("heheh")
   return NextResponse.next();
   
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import TitleWithSearchBar from "@/components/TitleWithSearchBar"
+import PageHeader from "@/components/PageHeader"
 import ProgramCard from "@/components/ProgramCard"
 
 const filters = [
@@ -20,7 +20,7 @@ const Programs = () => {
 
   return (
     <>
-      <TitleWithSearchBar
+      <PageHeader
         title="Programs"
         subtitle="Explore ongoing and upcoming activities."
         search={search}

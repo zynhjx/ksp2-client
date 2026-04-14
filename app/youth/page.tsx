@@ -2,7 +2,7 @@ import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import {ChevronRight} from "lucide-react";
+import {ChevronRight, UserRound, Zap, BadgeCheck} from "lucide-react";
 
 const Section = ({ children, className, containerClassName, id } : { children: React.ReactNode, className?: string, containerClassName?: string, id?: string }) => {
     return (
@@ -36,7 +36,6 @@ const StatItem = ({ label, value }: { label: string, value: string }) => {
 }
 
 const LandingPage = () => {
-    // const {user, isAuthenticated} =
 
     return (
         <div className="min-h-screen bg-theme-white">
@@ -50,8 +49,8 @@ const LandingPage = () => {
                     {/* Navigation */}
                     <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8 text-sm font-medium text-gray-600">
                         <a href="#features" className="hover:text-theme-blue transition">Features</a>
+                        <a href="#how-it-works" className="hover:text-theme-blue transition">How It Works</a>
                         <a href="#about" className="hover:text-theme-blue transition">About</a>
-                        <a href="#impact" className="hover:text-theme-blue transition">Impact</a>
                     </nav>
 
                     {/* Right buttons */}
@@ -123,10 +122,13 @@ const LandingPage = () => {
                    </div>
                 </Section> */}
 
+               
+
                 {/* Features Section */}
                 <Section id="features">
                     <div className="flex flex-col items-center mb-16 text-center">
-                        <h2 className="text-3xl md:text-5xl  font-bold text-gray-900 mb-6">Why Join us?</h2>
+                        <span className="text-sm font-semibold uppercase tracking-widest text-theme-blue">Features</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-gray-900 my-6">Why Join us?</h2>
                         <div className="w-20 h-1.5 bg-theme-blue rounded-full mb-6"></div>
                         <p className="text-gray-600 max-w-2xl text-lg">
                             Being registered means you&apos;re counted, heard, and connected to programs that directly benefit you and your community.
@@ -190,15 +192,87 @@ const LandingPage = () => {
                     </div> */}
                 </Section>
 
+                {/* How It Works Section */}
+                <Section id="how-it-works" className="bg-gray-50/50 border-y border-gray-100">
+                    <div className="flex flex-col items-center mb-14 text-center">
+                        <span className="text-sm font-semibold uppercase tracking-widest text-theme-blue">How It Works</span>
+                        <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mt-3 mb-4 leading-tight">
+                            Joining is <span className="text-theme-blue">Simple</span>
+                        </h2>
+                        <div className="w-16 h-1.5 bg-theme-blue rounded-full"></div>
+                    </div>
+
+                    <div className="relative flex flex-col md:flex-row items-stretch gap-6 md:gap-0">
+
+                        {/* Connector Line */}
+                        <div className="hidden md:block absolute top-7.5 left-[calc(16.67%)] right-[calc(16.67%)] h-px border-t-2 border-dashed border-blue-200 z-0" />
+
+                        {/* Step 1 */}
+                        <div className="flex-1 flex flex-col items-center text-center px-6 relative z-10">
+                            <div className="w-15 h-15 rounded-2xl bg-theme-blue text-white flex items-center justify-center mb-6 shadow-lg shadow-blue-900/20">
+                                <UserRound className="w-8 h-8" />
+                            </div>
+                            <span className="text-xs font-bold uppercase tracking-widest text-theme-blue mb-2">Step 01</span>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Create Your Profile</h3>
+                            <p className="text-gray-500 leading-relaxed text-sm">
+                                Sign up and fill in your basic info. It only takes a few minutes and no documents needed to get started.
+                            </p>
+                        </div>
+
+                        {/* Step 2 */}
+                        <div className="flex-1 flex flex-col items-center text-center px-6 relative z-10">
+                            <div className="w-15 h-15 rounded-2xl bg-theme-white border-2 border-blue-100 text-theme-blue flex items-center justify-center mb-6 shadow-sm">
+                                <BadgeCheck className="w-8 h-8" />
+                            </div>
+                            <span className="text-xs font-bold uppercase tracking-widest text-theme-blue mb-2">Step 02</span>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Get Officially Registered</h3>
+                            <p className="text-gray-500 leading-relaxed text-sm">
+                                Your profile gets recorded in your barangay&apos;s youth database, making you officially recognized by your SK.
+                            </p>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="flex-1 flex flex-col items-center text-center px-6 relative z-10">
+                            <div className="w-15 h-15 rounded-2xl bg-theme-white border-2 border-blue-100 text-theme-blue flex items-center justify-center mb-6 shadow-sm">
+                                <Zap className="w-8 h-8" />
+                            </div>
+                            <span className="text-xs font-bold uppercase tracking-widest text-theme-blue mb-2">Step 03</span>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Access Opportunities</h3>
+                            <p className="text-gray-500 leading-relaxed text-sm">
+                                Unlock eligibility for livelihood programs, events, and more — all tailored for the youth in your community.
+                            </p>
+                        </div>
+
+                    </div>
+                </Section>
+
+                <Section id="about" className="bg-gray-50/50 border-y border-gray-100">
+                    <div className="flex flex-col items-center text-center max-w-3xl mx-auto gap-6">
+                        <div>
+                            <span className="text-sm font-semibold uppercase tracking-widest text-theme-blue">About the Platform</span>
+                            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mt-3 mb-4 leading-tight">
+                                A Platform Made <span className="text-theme-blue">For You</span>
+                            </h2>
+                            <div className="w-16 h-1.5 bg-theme-blue rounded-full mx-auto mb-6"></div>
+                        </div>
+                        <p className="text-gray-600 text-lg leading-relaxed">
+                            This is your space as a young member of the community. Register once, and you&apos;re officially part of your barangay&apos;s youth records — making you eligible for programs and opportunities meant for you.
+                        </p>
+                        <p className="text-gray-600 text-lg leading-relaxed">
+                            No paperwork, no long lines. Just a simple profile that represents you and keeps you connected to what&apos;s happening in your community.
+                        </p>
+                    </div>
+                </Section>
+
                 {/* CTA Section */}
-                <Section className="bg-theme-blue text-white overflow-hidden relative">
+                <Section className="bg-theme-blue text-white overflow-hidden relative mt-16">
                     <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-theme-white/10 rounded-full blur-[100px]"></div>
                     <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-blue-400/20 rounded-full blur-[100px]"></div>
 
                     <div className="flex flex-col items-center text-center relative z-10 py-10">
-                        <h2 className="text-3xl md:text-5xl  mb-8 font-bold max-w-3xl leading-tight">Don&apos;t wait to be part of something bigger.</h2>
+                        <h2 className="text-3xl md:text-5xl  mb-8 font-bold max-w-3xl leading-tight">Be seen. Be heard. Be part of your community.</h2>
                         <p className="text-xl text-blue-100 mb-12 max-w-2xl">
-                            Join barangays using the Kabataan Statistical Profile to plan smarter for their communities.
+                            Your voice matters. Take part in programs, share your ideas, and help build a better barangay.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
                             <Link href="/auth/register" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">

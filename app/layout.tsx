@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", "font-sans", geist.variable)}
+      className={cn("h-full", "antialiased", "font-sans", geist.variable, "scroll-smooth")}
     >
       <body className="min-h-full min-w-full flex flex-col bg-white">
         {children}

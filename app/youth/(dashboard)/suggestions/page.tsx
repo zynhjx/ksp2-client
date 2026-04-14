@@ -1,6 +1,6 @@
 "use client"
 
-import TitleWithSearchBar from "@/components/TitleWithSearchBar"
+import TitleWithSearchBar from "@/components/PageHeader"
 import { useState } from "react"
 
 const filters = [
