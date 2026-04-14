@@ -31,10 +31,10 @@ const toTitleCase = (str: string = "") => {
 };
 
 const youthNavs = [
-  {name: "Dashboard", icon: LucideLayoutDashboard, path: "/youth/dashboard"},
-  {name: "Programs", icon: Calendar, path: "/youth/programs"},
-  {name: "Suggestions", icon: LightbulbIcon, path: "/youth/suggestions"},
-  {name: "Announcements", icon: Megaphone, path: "/youth/announcements"}
+  {name: "Dashboard", icon: LucideLayoutDashboard, path: "/dashboard"},
+  {name: "Programs", icon: Calendar, path: "/programs"},
+  {name: "Suggestions", icon: LightbulbIcon, path: "/suggestions"},
+  {name: "Announcements", icon: Megaphone, path: "/announcements"}
 ]
 
 const skNavs = [
@@ -50,19 +50,19 @@ const adminNavs = [
 ]
 
 
-const Sidebar = () => {
+const Sidebar = ({ type } : { type: string }) => {
   const pathname = usePathname();
   const { isOpen, toggleSidebar } = useSidebar()
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const { user, setUser } = useAuth()
   const router = useRouter()
   const userNavs = () => {
-    if (pathname.startsWith("/youth")) {
-      return youthNavs
-    } else if (pathname.startsWith("/sk")) {
+    if (type === "admin") {
+      return adminNavs
+    } else if (type === "sk") {
       return skNavs
     } else {
-      return adminNavs
+      return youthNavs
     }
   }
   
@@ -93,7 +93,7 @@ const Sidebar = () => {
   }
   return (
     <aside className={twMerge(
-      "absolute top-0 bottom-0 left-0 xl:static bg-white text-black box-border flex flex-col z-50",
+      "absolute top-0 bottom-0 left-0 xl:static bg-theme-white text-black box-border flex flex-col z-50",
       isOpen ? "w-70" : "w-auto",
       !isOpen && "max-w-18 -translate-x-full md:translate-x-0"
     )}>
