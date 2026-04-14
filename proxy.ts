@@ -3,12 +3,20 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = [
+  "/dashboard",
+  "/dashboard",
+  "/programs",
+  "/suggestions",
+  "/announcements",
+  "/onboarding"
+];
 const roleBasedRoute = [
   "/dashboard",
   "/programs",
   "/suggestions",
-  "/announcements"
+  "/announcements",
+  "/"
 ]
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -17,10 +25,14 @@ export default async function proxy(req: NextRequest) {
   const accessToken = req.cookies.get("accessToken")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
   const isProtectedRoute = protectedRoutes.some((r) => pathname.startsWith(r));
-  const isRoleBasedRoute = roleBasedRoute.some((r) => pathname.startsWith(r));
+  const isRoleBasedRoute = roleBasedRoute.some((route) => pathname === route);
   const isAuthRoute = pathname.startsWith("/auth");
   const isOnboardingRoute = pathname.startsWith("/onboarding")
-  const host = req.headers.get("host") || "";
+  const requiresAuth = isProtectedRoute || isRoleBasedRoute || isAuthRoute;
+  const host =
+    req.headers.get("x-forwarded-host") ||
+    req.headers.get("host") ||
+    "";
   const hostname = host.split(":")[0];
   const parts = hostname.split(".");
   const subdomain = parts.length > 2 ? parts[0] : null;
@@ -29,7 +41,7 @@ export default async function proxy(req: NextRequest) {
   console.log(url.pathname)
   console.log(hostname)
 
-  if (isProtectedRoute || isAuthRoute || isOnboardingRoute) {
+  if (requiresAuth) {
     if (accessToken) {
       try {
         const { payload } = await jwtVerify(accessToken, JWT_SECRET);
@@ -68,6 +80,10 @@ export default async function proxy(req: NextRequest) {
 
         if (res.ok) {
           const data = await res.json();
+
+          if (!data?.accessToken || !data?.refreshToken) {
+            throw new Error("Invalid refresh response");
+          }
 
           const { payload } = await jwtVerify(data.accessToken, JWT_SECRET)
 
@@ -127,15 +143,18 @@ export default async function proxy(req: NextRequest) {
 
   if (isRoleBasedRoute) {
     if (subdomain === "admin") {
-      url.pathname = `/admin${url.pathname}`
+      url.pathname = `/admin${url.pathname}`;
     } else if (subdomain === "sk") {
-      url.pathname = `/sk${url.pathname}`
+      url.pathname = `/sk${url.pathname}`;
+    } else if (!subdomain) {
+      url.pathname = `/youth${url.pathname}`;
     } else {
-      url.pathname = `/youth${url.pathname}`
+      return NextResponse.rewrite(new URL("/404", req.url));
     }
 
     return NextResponse.rewrite(url)
   }
+  return NextResponse.next();
   
 }
 

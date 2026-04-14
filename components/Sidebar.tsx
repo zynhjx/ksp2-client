@@ -93,7 +93,7 @@ const Sidebar = ({ type } : { type: string }) => {
   }
   return (
     <aside className={twMerge(
-      "absolute top-0 bottom-0 left-0 xl:static bg-theme-white text-black box-border flex flex-col z-50",
+      "absolute top-0 bottom-0 left-0 xl:static bg-theme-white text-black box-border flex flex-col z-50 border-r border-gray-300",
       isOpen ? "w-70" : "w-auto",
       !isOpen && "max-w-18 -translate-x-full md:translate-x-0"
     )}>
@@ -148,11 +148,11 @@ const Sidebar = ({ type } : { type: string }) => {
       </nav>
       <footer
         className={twMerge(
-          "hidden md:block mt-auto h-auto p-2 border-t border-gray-200",
+          "hidden md:block mt-auto h-auto p-2 border-t border-gray-300",
         )}
       >
-        <div className={twMerge("flex hover:cursor-pointer p-2 items-center",
-          isOpen && "gap-x-3 hover:bg-black/10 rounded-md "
+        <div className={twMerge("flex hover:cursor-pointer p-2 items-center hover:bg-black/10 rounded-md ",
+          isOpen && "gap-x-3 "
         )}
           onClick={() => setIsPopoverOpen(!isPopoverOpen)}
         >
