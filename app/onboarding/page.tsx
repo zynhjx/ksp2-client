@@ -10,6 +10,7 @@ import { toast } from 'react-toastify'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
 import Swal from "sweetalert2";
+import Link from 'next/link'
 
 
 const months = [
@@ -66,7 +67,6 @@ const employmentStatuses = [
 const OnboardingPage = () => {
   const [step, setStep] = useState(1)
   const [submitPending, setSubmitPending] = useState(false)
-  const [feedbackIsOpen, setFeedbackIsOpen] = useState(false)
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [month, setMonth] = useState("");
@@ -77,6 +77,7 @@ const OnboardingPage = () => {
   const [contact, setContact] = useState("");
   const [education, setEducation] = useState("");
   const [employmentStatus, setEmploymentStatus] = useState("");
+  const [agreed, setAgreed] = useState(false)
 
   const router = useRouter()
 
@@ -119,7 +120,7 @@ const OnboardingPage = () => {
         timer: 1200,
         showConfirmButton: false,
       }).then(() => {
-        router.replace(`/${data.user.role}/dashboard`);
+        router.replace(`/dashboard`);
       });
 
     } catch (error) {
@@ -166,7 +167,7 @@ const OnboardingPage = () => {
         return firstName.trim() !== "" && lastName.trim() !== "" && isValidDate() &&  gender.trim() !== ""
 
       case 2:
-        return isValidPHNumber(contact) && barangay.trim() !== "" && education.trim() !== "" && employmentStatus.trim() !== ""
+        return isValidPHNumber(contact) && barangay.trim() !== "" && education.trim() !== "" && employmentStatus.trim() !== "" && agreed
       default:
         return false
     }
@@ -322,6 +323,20 @@ const OnboardingPage = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+
+              <div className="flex gap-x-2 mt-5 mb-4 items-center px-2">
+                <input
+                  type={"checkbox"}
+                  checked={agreed}
+                  onChange={() => {setAgreed(!agreed)}}
+                  className={"accent-theme-blue h-4 w-4 hover:cursor-pointer focus:outline-none"}/>
+
+                <p className="text-sm text-gray-600 text-center">
+                  I agree to the{" "}
+                  <Link href="/terms" className="underline text-theme-blue">Terms of Use</Link> and{" "}
+                  <Link href="/privacy" className="underline text-theme-blue">Privacy Policy</Link>.
+                </p>
+              </div>
 
             </motion.div>
           ): null}

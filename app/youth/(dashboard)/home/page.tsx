@@ -11,7 +11,7 @@ const stats = [
   { label: "Ongoing Programs", value: 21 },
 ]
 
-const Dashboard = () => {
+const Home = () => {
   const { user } = useAuth()
 
   return (
@@ -47,4 +47,4 @@ const Dashboard = () => {
     </>
   )
 }
-export default Dashboard
+export default Home

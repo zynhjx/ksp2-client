@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 const protectedRoutes = [
-  "/dashboard",
+  "/home",
   "/dashboard",
   "/programs",
   "/suggestions",
@@ -12,12 +12,25 @@ const protectedRoutes = [
   "/onboarding"
 ];
 const roleBasedRoute = [
+  "/home",
   "/dashboard",
   "/programs",
   "/suggestions",
   "/announcements",
   "/"
 ]
+
+type PayloadType = { 
+  payload: 
+    { 
+      id: number, 
+      email: string, 
+      role: "youth" | "sk" | "admin", 
+      status: "pending" | "active", 
+      type: "access"
+    }
+}
+
 const isProd = process.env.NODE_ENV === 'production'
 
 export default async function proxy(req: NextRequest) {
@@ -37,9 +50,20 @@ export default async function proxy(req: NextRequest) {
   const parts = hostname.split(".");
   const subdomain = parts.length > 2 ? parts[0] : null;
   const url = req.nextUrl.clone();
+  const blockedPaths = ["/youth", "/sk", "/admin"];
+  const roleRedirectMap: Record<string, string> = {
+    admin: "/dashboard",
+    sk: "/dashboard",
+    youth: "/home", // or "/"
+  };
 
+
+  if (blockedPaths.some((path) => pathname.startsWith(path))) {
+    return NextResponse.rewrite(new URL("/404", req.url));
+  }
 
   if (requiresAuth) {
+    
     if (accessToken) {
       try {
         const { payload } = await jwtVerify(accessToken, JWT_SECRET);
@@ -52,15 +76,16 @@ export default async function proxy(req: NextRequest) {
         }
 
         if (isAuthRoute) {
-          return NextResponse.redirect(new URL(`/dashboard`, req.url));
+          const redirectPath = roleRedirectMap[payload.role] || "/";
+          response = NextResponse.redirect(new URL(redirectPath, req.url));
         }
-
       } catch (error) {
+        
         console.log(error)
         if (isAuthRoute) {
           return NextResponse.next()
         }
-        return NextResponse.redirect(new URL("/auth/login", req.url));
+        return NextResponse.redirect(new URL("/auth", req.url));
       }
       
     } else if (refreshToken) {
@@ -83,7 +108,7 @@ export default async function proxy(req: NextRequest) {
             throw new Error("Invalid refresh response");
           }
 
-          const { payload } = await jwtVerify(data.accessToken, JWT_SECRET)
+          const { payload }: PayloadType = await jwtVerify(data.accessToken, JWT_SECRET)
 
           let response
           if (payload.status === "pending") {
@@ -98,7 +123,9 @@ export default async function proxy(req: NextRequest) {
           }
 
           if (isAuthRoute) {
-            response = NextResponse.redirect(new URL(`/dashboard`, req.url));
+            const redirectPath = roleRedirectMap[payload.role] || "/";
+            response = NextResponse.redirect(new URL(redirectPath, req.url));
+
           } else if (isProtectedRoute) {
             response = NextResponse.next();
           }
@@ -127,15 +154,20 @@ export default async function proxy(req: NextRequest) {
         if (isAuthRoute) {
           return NextResponse.next()
         }
-        return NextResponse.redirect(new URL("/auth/login", req.url));
+        return NextResponse.redirect(new URL("/auth", req.url));
 
       } catch (error) {
         console.log(error)
         if (isAuthRoute) {
           return NextResponse.next()
         }
-        return NextResponse.redirect(new URL("/auth/login", req.url));
+        return NextResponse.redirect(new URL("/auth", req.url));
       }
+    } else {
+      if (isAuthRoute) {
+        return NextResponse.next()
+      }
+      return NextResponse.redirect(new URL("/auth", req.url));
     }
   }
 
@@ -152,7 +184,6 @@ export default async function proxy(req: NextRequest) {
 
     return NextResponse.rewrite(url)
   }
-  console.log("heheh")
   return NextResponse.next();
   
 }

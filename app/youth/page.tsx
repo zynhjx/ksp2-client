@@ -17,7 +17,7 @@ const Section = ({ children, className, containerClassName, id } : { children: R
 const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => {
     return (
         <div className="p-8 rounded-2xl border border-gray-100 bg-theme-white hover:border-blue-100 hover:shadow-xl hover:shadow-blue-50/50 transition-all duration-300 group">
-            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-6 group-hover:bg-theme-blue group-hover:text-white transition-colors duration-300 text-theme-blue">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-6 group-hover:bg-theme-dark-blue group-hover:text-white transition-colors duration-300 text-theme-dark-blue">
                 {icon}
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
@@ -29,7 +29,7 @@ const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, titl
 const StatItem = ({ label, value }: { label: string, value: string }) => {
     return (
         <div className="flex flex-col items-center text-center">
-            <span className="text-4xl md:text-5xl  text-theme-blue mb-2">{value}</span>
+            <span className="text-4xl md:text-5xl  text-theme-dark-blue mb-2">{value}</span>
             <span className="text-sm uppercase tracking-widest font-semibold text-gray-500">{label}</span>
         </div>
     )
@@ -48,9 +48,9 @@ const LandingPage = () => {
 
                     {/* Navigation */}
                     <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8 text-sm font-medium text-gray-600">
-                        <a href="#features" className="hover:text-theme-blue transition">Features</a>
-                        <a href="#how-it-works" className="hover:text-theme-blue transition">How It Works</a>
-                        <a href="#about" className="hover:text-theme-blue transition">About</a>
+                        <a href="#features" className="hover:text-theme-dark-blue transition">Features</a>
+                        <a href="#how-it-works" className="hover:text-theme-dark-blue transition">How It Works</a>
+                        <a href="#about" className="hover:text-theme-dark-blue transition">About</a>
                     </nav>
 
                     {/* Right buttons */}
@@ -59,7 +59,7 @@ const LandingPage = () => {
                             Sign In
                         </Link>
 
-                        <Link href="/auth/register" className="px-5 py-2.5 rounded-xl bg-theme-blue text-white cursor-pointer font-semibold text-sm hover:opacity-90 transition shadow-lg shadow-blue-900/20">
+                        <Link href="/auth/register" className="px-5 py-2.5 rounded-xl bg-theme-dark-blue text-white cursor-pointer font-semibold text-sm hover:opacity-90 transition shadow-lg shadow-blue-900/20">
                             Get Started
                         </Link>
                     </div>
@@ -77,7 +77,7 @@ const LandingPage = () => {
                     <div className="flex flex-col items-center text-center">
 
                         <h1 className="text-5xl md:text-7xl  tracking-tight font-bold text-gray-900 mb-8 max-w-4xl leading-[1.1]">
-                            Your Community. <span className="text-theme-blue">Your Future.</span> Your Profile.
+                            Your Community. <span className="text-theme-dark-blue">Your Future.</span> Your Profile.
                         </h1>
 
                         <p className="text-xl text-gray-600 max-w-2xl mb-12 leading-relaxed">
@@ -88,7 +88,7 @@ const LandingPage = () => {
                             {/*{isAuthenticated ? (*/}
                             {/*  <Link*/}
                             {/*    href={user.role === "official" ? "/dashboard" : "/youth/profile"}*/}
-                            {/*    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-blue flex items-center justify-center text-white font-bold text-lg hover:shadow-xl hover:shadow-blue-900/30 transition-all cursor-pointer text-center"*/}
+                            {/*    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-dark-blue flex items-center justify-center text-white font-bold text-lg hover:shadow-xl hover:shadow-blue-900/30 transition-all cursor-pointer text-center"*/}
                             {/*  >*/}
                             {/*      Go to Dashboard <ChevronRight className="ml-3" />*/}
                             {/*  </Link>*/}
@@ -96,7 +96,7 @@ const LandingPage = () => {
                             {/*  <>*/}
                                   <Link
                                     href="/auth/register"
-                                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-blue flex items-center justify-center text-white font-bold text-lg hover:shadow-xl hover:shadow-blue-900/30 transition-all cursor-pointer text-center"
+                                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-dark-blue flex items-center justify-center text-white font-bold text-lg hover:shadow-xl hover:shadow-blue-900/30 transition-all cursor-pointer text-center"
                                   >
                                       Become a Youth Member <ChevronRight className="ml-3" />
                                   </Link>
@@ -127,9 +127,9 @@ const LandingPage = () => {
                 {/* Features Section */}
                 <Section id="features">
                     <div className="flex flex-col items-center mb-16 text-center">
-                        <span className="text-sm font-semibold uppercase tracking-widest text-theme-blue">Features</span>
+                        <span className="text-sm font-semibold uppercase tracking-widest text-theme-dark-blue">Features</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-gray-900 my-6">Why Join us?</h2>
-                        <div className="w-20 h-1.5 bg-theme-blue rounded-full mb-6"></div>
+                        <div className="w-20 h-1.5 bg-theme-dark-blue rounded-full mb-6"></div>
                         <p className="text-gray-600 max-w-2xl text-lg">
                             Being registered means you&apos;re counted, heard, and connected to programs that directly benefit you and your community.
                         </p>
@@ -195,11 +195,11 @@ const LandingPage = () => {
                 {/* How It Works Section */}
                 <Section id="how-it-works" className="bg-gray-50/50 border-y border-gray-100">
                     <div className="flex flex-col items-center mb-14 text-center">
-                        <span className="text-sm font-semibold uppercase tracking-widest text-theme-blue">How It Works</span>
+                        <span className="text-sm font-semibold uppercase tracking-widest text-theme-dark-blue">How It Works</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mt-3 mb-4 leading-tight">
-                            Joining is <span className="text-theme-blue">Simple</span>
+                            Joining is <span className="text-theme-dark-blue">Simple</span>
                         </h2>
-                        <div className="w-16 h-1.5 bg-theme-blue rounded-full"></div>
+                        <div className="w-16 h-1.5 bg-theme-dark-blue rounded-full"></div>
                     </div>
 
                     <div className="relative flex flex-col md:flex-row items-stretch gap-6 md:gap-0">
@@ -209,10 +209,10 @@ const LandingPage = () => {
 
                         {/* Step 1 */}
                         <div className="flex-1 flex flex-col items-center text-center px-6 relative z-10">
-                            <div className="w-15 h-15 rounded-2xl bg-theme-blue text-white flex items-center justify-center mb-6 shadow-lg shadow-blue-900/20">
+                            <div className="w-15 h-15 rounded-2xl bg-theme-dark-blue text-white flex items-center justify-center mb-6 shadow-lg shadow-blue-900/20">
                                 <UserRound className="w-8 h-8" />
                             </div>
-                            <span className="text-xs font-bold uppercase tracking-widest text-theme-blue mb-2">Step 01</span>
+                            <span className="text-xs font-bold uppercase tracking-widest text-theme-dark-blue mb-2">Step 01</span>
                             <h3 className="text-xl font-bold text-gray-900 mb-3">Create Your Profile</h3>
                             <p className="text-gray-500 leading-relaxed text-sm">
                                 Sign up and fill in your basic info. It only takes a few minutes and no documents needed to get started.
@@ -221,10 +221,10 @@ const LandingPage = () => {
 
                         {/* Step 2 */}
                         <div className="flex-1 flex flex-col items-center text-center px-6 relative z-10">
-                            <div className="w-15 h-15 rounded-2xl bg-theme-white border-2 border-blue-100 text-theme-blue flex items-center justify-center mb-6 shadow-sm">
+                            <div className="w-15 h-15 rounded-2xl bg-theme-white border-2 border-blue-100 text-theme-dark-blue flex items-center justify-center mb-6 shadow-sm">
                                 <BadgeCheck className="w-8 h-8" />
                             </div>
-                            <span className="text-xs font-bold uppercase tracking-widest text-theme-blue mb-2">Step 02</span>
+                            <span className="text-xs font-bold uppercase tracking-widest text-theme-dark-blue mb-2">Step 02</span>
                             <h3 className="text-xl font-bold text-gray-900 mb-3">Get Officially Registered</h3>
                             <p className="text-gray-500 leading-relaxed text-sm">
                                 Your profile gets recorded in your barangay&apos;s youth database, making you officially recognized by your SK.
@@ -233,10 +233,10 @@ const LandingPage = () => {
 
                         {/* Step 3 */}
                         <div className="flex-1 flex flex-col items-center text-center px-6 relative z-10">
-                            <div className="w-15 h-15 rounded-2xl bg-theme-white border-2 border-blue-100 text-theme-blue flex items-center justify-center mb-6 shadow-sm">
+                            <div className="w-15 h-15 rounded-2xl bg-theme-white border-2 border-blue-100 text-theme-dark-blue flex items-center justify-center mb-6 shadow-sm">
                                 <Zap className="w-8 h-8" />
                             </div>
-                            <span className="text-xs font-bold uppercase tracking-widest text-theme-blue mb-2">Step 03</span>
+                            <span className="text-xs font-bold uppercase tracking-widest text-theme-dark-blue mb-2">Step 03</span>
                             <h3 className="text-xl font-bold text-gray-900 mb-3">Access Opportunities</h3>
                             <p className="text-gray-500 leading-relaxed text-sm">
                                 Unlock eligibility for livelihood programs, events, and more — all tailored for the youth in your community.
@@ -249,11 +249,11 @@ const LandingPage = () => {
                 <Section id="about" className="bg-gray-50/50 border-y border-gray-100">
                     <div className="flex flex-col items-center text-center max-w-3xl mx-auto gap-6">
                         <div>
-                            <span className="text-sm font-semibold uppercase tracking-widest text-theme-blue">About the Platform</span>
+                            <span className="text-sm font-semibold uppercase tracking-widest text-theme-dark-blue">About the Platform</span>
                             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mt-3 mb-4 leading-tight">
-                                A Platform Made <span className="text-theme-blue">For You</span>
+                                A Platform Made <span className="text-theme-dark-blue">For You</span>
                             </h2>
-                            <div className="w-16 h-1.5 bg-theme-blue rounded-full mx-auto mb-6"></div>
+                            <div className="w-16 h-1.5 bg-theme-dark-blue rounded-full mx-auto mb-6"></div>
                         </div>
                         <p className="text-gray-600 text-lg leading-relaxed">
                             This is your space as a young member of the community. Register once, and you&apos;re officially part of your barangay&apos;s youth records — making you eligible for programs and opportunities meant for you.
@@ -265,7 +265,7 @@ const LandingPage = () => {
                 </Section>
 
                 {/* CTA Section */}
-                <Section className="bg-theme-blue text-white overflow-hidden relative mt-16">
+                <Section className="bg-theme-dark-blue text-white overflow-hidden relative mt-16">
                     <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-theme-white/10 rounded-full blur-[100px]"></div>
                     <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-blue-400/20 rounded-full blur-[100px]"></div>
 
@@ -275,7 +275,7 @@ const LandingPage = () => {
                             Your voice matters. Take part in programs, share your ideas, and help build a better barangay.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/auth/register" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">
+                            <Link href="/auth/register" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-dark-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">
                                 Get Started for Free
                             </Link>
                         </div>

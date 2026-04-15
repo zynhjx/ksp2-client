@@ -19,14 +19,12 @@ import { redirect, useRouter } from 'next/navigation';
 type StepOneProps = {
   email: string;
   setEmail: (v: string) => void;
-  agreed: boolean;
-  setAgreed: (v: boolean) => void;
   isFormValid: boolean;
   sending: boolean;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid, sending}: StepOneProps) => {
+const StepOne = ({handleSubmit, email, setEmail, isFormValid, sending}: StepOneProps) => {
     return (
       <motion.form 
         initial={{x: 10, opacity: 0}}
@@ -34,7 +32,7 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
         exit={{x:-10, opacity: 0}}
         transition={{ duration: 0.5 }}
         onSubmit={handleSubmit} className='space-y-4'>
-        <AuthCardTitle title={"Sign up with email"}/>
+        <AuthCardTitle title={"Sign in to continue"} subtitle='We’ll send you a one-time code to sign in or create your account.'/>
 
         <FormInput
           value={email}
@@ -44,19 +42,7 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
           placeholder={"john@example.com"}
           label={"Email Address"} />
 
-        <div className="flex gap-x-2 mt-5 mb-4 items-center px-2">
-          <input
-            type={"checkbox"}
-            checked={agreed}
-            onChange={() => {setAgreed(!agreed)}}
-            className={"accent-theme-blue h-4 w-4 hover:cursor-pointer focus:outline-none"}/>
-
-          <p className="text-sm text-gray-600 text-center">
-            I agree to the{" "}
-            <Link href="/terms" className="underline text-theme-blue">Terms of Use</Link> and{" "}
-            <Link href="/privacy" className="underline text-theme-blue">Privacy Policy</Link>.
-          </p>
-        </div>
+        
 
         <Button
           type="submit"
@@ -65,9 +51,6 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
         >
           {sending ? "Sending OTP..." : "Continue"}
         </Button>
-
-
-        <AuthCardFooter type={"register"} />
 
       </motion.form>
     )
@@ -148,13 +131,17 @@ const StepOne = ({handleSubmit, email, setEmail, agreed, setAgreed, isFormValid,
 const RegisterPage = () => {
   const [email, setEmail] = useState("")
   const [sending, setSending] = useState(false)
-  const [agreed, setAgreed] = useState<boolean>(false);
   const [step, setStep] = useState(1)
   const [countdown, setCountdown] = useState(0)
 	const [otp, setOtp] = useState("")
 	const [invalid, setInvalid] = useState(false)
 	const [success, setSuccess] = useState(false)
 	const [pendingResend, setPendingResend] = useState(false)
+  const roleRedirectMap: Record<string, string> = {
+    admin: "/dashboard",
+    sk: "/dashboard",
+    youth: "/home", // or "/"
+  };
 
   const router = useRouter()
 
@@ -260,7 +247,8 @@ const RegisterPage = () => {
 
 			setSuccess(true)
 			toast.success(data.message)
-      router.replace(`/${data.user.role}/dashboard`)
+      const redirectPath = roleRedirectMap[data.user.role] || "/";
+      return router.replace(redirectPath);
 
 		} catch (error) {
 			console.error("Error: ", error);
@@ -275,7 +263,7 @@ const RegisterPage = () => {
 
   const isFormValid = () => {
     if (step === 1) {
-      return email.trim() !== "" && isValidEmail(email) && agreed;
+      return email.trim() !== "" && isValidEmail(email);
     }
 
     if (step === 2) {
@@ -294,8 +282,6 @@ const RegisterPage = () => {
         <StepOne
           email={email}
           setEmail={setEmail}
-          agreed={agreed}
-          setAgreed={setAgreed}
           isFormValid={isFormValid()}
           sending={sending}
           handleSubmit={handleSubmit}
