@@ -16,7 +16,7 @@ const Home = () => {
 
   return (
     <>
-      <Title className="text-center mb-8 text-3xl">Dashboard</Title>
+      <Title className="mb-8 text-3xl">Hi, {user?.first_name}!</Title>
 
       <div className="flex gap-4 mb-6">
         {stats.map((s) => (

@@ -32,7 +32,7 @@ const StepOne = ({handleSubmit, email, setEmail, isFormValid, sending}: StepOneP
         exit={{x:-10, opacity: 0}}
         transition={{ duration: 0.5 }}
         onSubmit={handleSubmit} className='space-y-4'>
-        <AuthCardTitle title={"Sign in to continue"} subtitle='We’ll send you a one-time code to sign in or create your account.'/>
+        <AuthCardTitle title={"Sign in to continue"} />
 
         <FormInput
           value={email}
@@ -51,6 +51,17 @@ const StepOne = ({handleSubmit, email, setEmail, isFormValid, sending}: StepOneP
         >
           {sending ? "Sending OTP..." : "Continue"}
         </Button>
+
+        <div className="mt-5 px-2 text-sm text-gray-600 text-center leading-relaxed">
+          By continuing, you agree to our{" "}
+          <Link href="/terms" target="_blank" rel="noopener noreferrer" className="hover:underline text-theme-blue">
+            Terms of Use
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:underline text-theme-blue">
+            Privacy Policy
+          </Link>.
+        </div>        
 
       </motion.form>
     )

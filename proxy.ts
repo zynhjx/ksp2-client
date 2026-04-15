@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
+
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 const protectedRoutes = [
   "/home",
@@ -51,6 +52,7 @@ export default async function proxy(req: NextRequest) {
   const subdomain = parts.length > 2 ? parts[0] : null;
   const url = req.nextUrl.clone();
   const blockedPaths = ["/youth", "/sk", "/admin"];
+  const isPublicRoute = !isProtectedRoute && !isAuthRoute && !isOnboardingRoute;
   const roleRedirectMap: Record<string, string> = {
     admin: "/dashboard",
     sk: "/dashboard",
@@ -66,7 +68,7 @@ export default async function proxy(req: NextRequest) {
     
     if (accessToken) {
       try {
-        const { payload } = await jwtVerify(accessToken, JWT_SECRET);
+        const { payload } : PayloadType = await jwtVerify(accessToken, JWT_SECRET);
 
         if (payload.status === "pending") {
           if (isOnboardingRoute) {
@@ -75,10 +77,15 @@ export default async function proxy(req: NextRequest) {
           return NextResponse.redirect(new URL('/onboarding', req.url));
         }
 
-        if (isAuthRoute) {
+        console.log("hi")
+
+        if (isAuthRoute || isOnboardingRoute) {
+          console.log("this one")
           const redirectPath = roleRedirectMap[payload.role] || "/";
-          response = NextResponse.redirect(new URL(redirectPath, req.url));
+          return NextResponse.redirect(new URL(redirectPath, req.url));
         }
+
+
       } catch (error) {
         
         console.log(error)
@@ -89,7 +96,7 @@ export default async function proxy(req: NextRequest) {
       }
       
     } else if (refreshToken) {
-      if (!isProtectedRoute && !isAuthRoute && !isOnboardingRoute) {
+      if (isPublicRoute) {
         return NextResponse.next();
       }
 
@@ -119,15 +126,16 @@ export default async function proxy(req: NextRequest) {
             }
             
           } else {
-            response = NextResponse.next();
-          }
+            if (isAuthRoute || isOnboardingRoute) {
+              const redirectPath = roleRedirectMap[payload.role] || "/";
+              response = NextResponse.redirect(new URL(redirectPath, req.url));
 
-          if (isAuthRoute) {
-            const redirectPath = roleRedirectMap[payload.role] || "/";
-            response = NextResponse.redirect(new URL(redirectPath, req.url));
-
-          } else if (isProtectedRoute) {
-            response = NextResponse.next();
+            } else if (isProtectedRoute) {
+              response = NextResponse.next();
+            } else {
+              response = NextResponse.next();
+            }
+            
           }
 
           response.cookies.set('accessToken', data.accessToken, {

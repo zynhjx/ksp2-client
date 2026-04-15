@@ -11,6 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGr
 import { useRouter } from 'next/navigation'
 import Swal from "sweetalert2";
 import Link from 'next/link'
+const roleRedirectMap: Record<string, string> = {
+    admin: "/dashboard",
+    sk: "/dashboard",
+    youth: "/home", // or "/"
+  };
 
 
 const months = [
@@ -28,6 +33,59 @@ const months = [
   { name: "December", value: 12 },
 ];
 
+const days = [
+  { name: "01", value: 1 },
+  { name: "02", value: 2 },
+  { name: "03", value: 3 },
+  { name: "04", value: 4 },
+  { name: "05", value: 5 },
+  { name: "06", value: 6 },
+  { name: "07", value: 7 },
+  { name: "08", value: 8 },
+  { name: "09", value: 9 },
+  { name: "10", value: 10 },
+  { name: "11", value: 11 },
+  { name: "12", value: 12 },
+  { name: "13", value: 13 },
+  { name: "14", value: 14 },
+  { name: "15", value: 15 },
+  { name: "16", value: 16 },
+  { name: "17", value: 17 },
+  { name: "18", value: 18 },
+  { name: "19", value: 19},
+  { name: "20", value: 20 },
+  { name: "21", value: 21 },
+  { name: "22", value: 22 },
+  { name: "23", value: 23 },
+  { name: "24", value: 24 },
+  { name: "25", value: 25 },
+  { name: "26", value: 26 },
+  { name: "27", value: 27 },
+  { name: "28", value: 28 },
+  { name: "29", value: 29 },
+  { name: "30", value: 30 },
+  { name: "31", value: 31 },
+]
+
+const years = [
+  { name: "1996", value: 1996 },
+  { name: "1997", value: 1997 },
+  { name: "1998", value: 1998 },
+  { name: "1999", value: 1999 },
+  { name: "2000", value: 2000 },
+  { name: "2001", value: 2001 },
+  { name: "2002", value: 2002 },
+  { name: "2003", value: 2003 },
+  { name: "2004", value: 2004 },
+  { name: "2005", value: 2005 },
+  { name: "2006", value: 2006 },
+  { name: "2007", value: 2007 },
+  { name: "2008", value: 2008 },
+  { name: "2009", value: 2009 },
+  { name: "2010", value: 2010 },
+  { name: "2011", value: 2011 },
+]
+
 const genders = [
   "Male",
   "Female",
@@ -35,9 +93,9 @@ const genders = [
 ]
 
 const barangays = [
-  "Barangay Simpocan",
-  "Barangay Bagong Bayan",
-  "Barangay Napsan"
+  "Barangay Bagong Sikat",
+  "Barangay Maunlad",
+  "Barangay Bagong Silang"
 ]
 
 const educationLevels = [
@@ -77,7 +135,6 @@ const OnboardingPage = () => {
   const [contact, setContact] = useState("");
   const [education, setEducation] = useState("");
   const [employmentStatus, setEmploymentStatus] = useState("");
-  const [agreed, setAgreed] = useState(false)
 
   const router = useRouter()
 
@@ -120,7 +177,8 @@ const OnboardingPage = () => {
         timer: 1200,
         showConfirmButton: false,
       }).then(() => {
-        router.replace(`/dashboard`);
+        const redirectPath = roleRedirectMap[data.user.role] || "/";
+        return router.replace(redirectPath)
       });
 
     } catch (error) {
@@ -167,7 +225,7 @@ const OnboardingPage = () => {
         return firstName.trim() !== "" && lastName.trim() !== "" && isValidDate() &&  gender.trim() !== ""
 
       case 2:
-        return isValidPHNumber(contact) && barangay.trim() !== "" && education.trim() !== "" && employmentStatus.trim() !== "" && agreed
+        return isValidPHNumber(contact) && barangay.trim() !== "" && education.trim() !== "" && employmentStatus.trim() !== ""
       default:
         return false
     }
@@ -221,23 +279,53 @@ const OnboardingPage = () => {
                     </SelectContent>
                   </Select>
                   
-                  <FormInput
+                  {/* <FormInput
                     value={day}
                     type='text'
                     inputMode='numeric'
                     containerClassName='flex-1'
                     maxLength={2}
                     placeholder='Day'
-                    onChange={(e) => setDay(e.target.value.replace(/\D/g, ""))}/>
+                    onChange={(e) => setDay(e.target.value.replace(/\D/g, ""))}/> */}
+                    
+                  <Select value={day} onValueChange={setDay}>
+                    <SelectTrigger className='text-base min-h-12 flex-1 px-4 rounded border border-gray-200 focus:border-theme-blue focus:ring-0 outline-none transition'>
+                      <SelectValue placeholder="Day"/>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {days.map((m) => (
+                          <SelectItem key={m.value} value={m.value.toString()}>
+                            {m.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
 
-                  <FormInput
+                  {/* <FormInput
                     value={year}
                     containerClassName='flex-1'
                     type='text'
                     inputMode='numeric'
                     maxLength={4}
                     placeholder='Year'
-                    onChange={(e) => setYear(e.target.value.replace(/\D/g, ""))}/>
+                    onChange={(e) => setYear(e.target.value.replace(/\D/g, ""))}/> */}
+
+                  <Select value={year} onValueChange={setYear}>
+                    <SelectTrigger className='text-base min-h-12 flex-1 px-4 rounded border border-gray-200 focus:border-theme-blue focus:ring-0 outline-none transition'>
+                      <SelectValue placeholder="Year"/>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {years.map((m) => (
+                          <SelectItem key={m.value} value={m.value.toString()}>
+                            {m.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -272,6 +360,7 @@ const OnboardingPage = () => {
                   value={contact}
                   label='Contact Number' 
                   type='text'
+                  maxLength={11}
                   inputMode='numeric'
                   placeholder='e.g., 09123456789'
                   onChange={(e) => setContact(e.target.value.replace(/\D/g, ""))}/>
@@ -323,20 +412,6 @@ const OnboardingPage = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-
-              <div className="flex gap-x-2 mt-5 mb-4 items-center px-2">
-                <input
-                  type={"checkbox"}
-                  checked={agreed}
-                  onChange={() => {setAgreed(!agreed)}}
-                  className={"accent-theme-blue h-4 w-4 hover:cursor-pointer focus:outline-none"}/>
-
-                <p className="text-sm text-gray-600 text-center">
-                  I agree to the{" "}
-                  <Link href="/terms" className="underline text-theme-blue">Terms of Use</Link> and{" "}
-                  <Link href="/privacy" className="underline text-theme-blue">Privacy Policy</Link>.
-                </p>
-              </div>
 
             </motion.div>
           ): null}
