@@ -18,7 +18,7 @@ const Home = () => {
     <>
       <Title className="mb-8 text-3xl">Hi, {user?.first_name}!</Title>
 
-      <div className="flex gap-4 mb-6">
+      {/* <div className="flex gap-4 mb-6">
         {stats.map((s) => (
           <div
             key={s.label}
@@ -28,7 +28,7 @@ const Home = () => {
             <span>{s.label}</span>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-2 gap-4">
         <ListContainer

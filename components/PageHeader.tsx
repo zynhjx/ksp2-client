@@ -1,24 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
-type FilterType = {
-  label: string
-  options: string[]
-}
 
 type PageHeaderType = {
   title: string
   subtitle?: string
-  filter?: FilterType[]
+  filters?: ReactNode
   actionButton?: boolean
   buttonLabel?: string
   onButtonClick?: () => void
@@ -30,7 +18,7 @@ type PageHeaderType = {
 const PageHeader = ({
     title, 
     subtitle, 
-    filter, 
+    filters,
     actionButton, 
     buttonLabel, 
     onButtonClick, 
@@ -38,12 +26,6 @@ const PageHeader = ({
     search,
     setSearch
   }: PageHeaderType) => {
-
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({})
-
-  const handleFilterChange = (label: string, value: string) => {
-    setSelectedFilters((prev) => ({ ...prev, [label]: value }))
-  }
 
   return (
     <div className="flex flex-col mb-8">
@@ -79,26 +61,9 @@ const PageHeader = ({
           placeholder={searchPlaceholder}
         />
 
-        {filter && filter.length > 0 && (
+        {filters && (
           <div className="flex gap-2">
-            {filter.map((f) => (
-              <Select
-                key={f.label}
-                value={selectedFilters[f.label] ?? ""}
-                onValueChange={(value) => handleFilterChange(f.label, value)}
-              >
-                <SelectTrigger className="w-40 bg-white! border border-gray-200 rounded-sm px-4 py-3 h-12.5!">
-                  <SelectValue placeholder={f.label} />
-                </SelectTrigger>
-                <SelectContent>
-                  {f.options.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ))}
+            {filters}
           </div>
         )}
       </div>

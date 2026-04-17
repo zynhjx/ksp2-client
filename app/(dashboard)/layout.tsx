@@ -43,6 +43,9 @@ async function getUser(): Promise<User | null> {
 const Layout = async ({children}: {children: ReactNode} ) => {
   const user = await getUser()
 
+  if (!user) {
+    return
+  }
 
   return (
     <AuthProvider initialUser={user}>

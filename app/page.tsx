@@ -55,11 +55,11 @@ const LandingPage = () => {
 
                     {/* Right buttons */}
                     <div className="flex items-center gap-3">
-                        <Link href="/auth/login" className="hidden sm:block px-5 py-2.5 rounded-xl bg-transparent text-gray-700 hover:bg-gray-100 transition cursor-pointer font-semibold text-sm">
+                        <Link href="/auth" className="hidden sm:block px-5 py-2.5 rounded-xl bg-transparent text-gray-700 hover:bg-gray-100 transition cursor-pointer font-semibold text-sm">
                             Sign In
                         </Link>
 
-                        <Link href="/auth/register" className="px-5 py-2.5 rounded-xl bg-theme-dark-blue text-white cursor-pointer font-semibold text-sm hover:opacity-90 transition shadow-lg shadow-blue-900/20">
+                        <Link href="/auth" className="px-5 py-2.5 rounded-xl bg-theme-dark-blue text-white cursor-pointer font-semibold text-sm hover:opacity-90 transition shadow-lg shadow-blue-900/20">
                             Get Started
                         </Link>
                     </div>
@@ -95,13 +95,13 @@ const LandingPage = () => {
                             {/*) : (*/}
                             {/*  <>*/}
                                   <Link
-                                    href="/auth/register"
+                                    href="/auth"
                                     className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-dark-blue flex items-center justify-center text-white font-bold text-lg hover:shadow-xl hover:shadow-blue-900/30 transition-all cursor-pointer text-center"
                                   >
                                       Become a Youth Member <ChevronRight className="ml-3" />
                                   </Link>
                                   <Link
-                                    href="/auth/login"
+                                    href="/auth"
                                     className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-white text-gray-700 border border-gray-200 font-bold text-lg hover:bg-gray-50 transition cursor-pointer text-center"
                                   >
                                       Sign In to Dashboard
@@ -275,7 +275,7 @@ const LandingPage = () => {
                             Your voice matters. Take part in programs, share your ideas, and help build a better barangay.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/auth/register" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-dark-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">
+                            <Link href="/auth" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-dark-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">
                                 Get Started for Free
                             </Link>
                         </div>

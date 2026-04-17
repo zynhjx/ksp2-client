@@ -85,29 +85,18 @@ const LandingPage = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-                            {/*{isAuthenticated ? (*/}
-                            {/*  <Link*/}
-                            {/*    href={user.role === "official" ? "/dashboard" : "/youth/profile"}*/}
-                            {/*    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-dark-blue flex items-center justify-center text-white font-bold text-lg hover:shadow-xl hover:shadow-blue-900/30 transition-all cursor-pointer text-center"*/}
-                            {/*  >*/}
-                            {/*      Go to Dashboard <ChevronRight className="ml-3" />*/}
-                            {/*  </Link>*/}
-                            {/*) : (*/}
-                            {/*  <>*/}
-                                  <Link
-                                    href="/auth"
-                                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-dark-blue flex items-center justify-center text-white font-bold text-lg hover:shadow-xl hover:shadow-blue-900/30 transition-all cursor-pointer text-center"
-                                  >
-                                      Set Up Your Barangay <ChevronRight className="ml-3" />
-                                  </Link>
-                                  <Link
-                                    href="/auth"
-                                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-white text-gray-700 border border-gray-200 font-bold text-lg hover:bg-gray-50 transition cursor-pointer text-center"
-                                  >
-                                      Sign In to Dashboard
-                                  </Link>
-                            {/*  </>*/}
-                            {/*)}*/}
+                          <Link
+                            href="/auth"
+                            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-dark-blue flex items-center justify-center text-white font-bold text-lg hover:shadow-xl hover:shadow-blue-900/30 transition-all cursor-pointer text-center"
+                          >
+                            Set Up Your Barangay <ChevronRight className="ml-3" />
+                          </Link>
+                          <Link
+                            href="/auth"
+                            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-theme-white text-gray-700 border border-gray-200 font-bold text-lg hover:bg-gray-50 transition cursor-pointer text-center"
+                          >
+                            Sign In to Dashboard
+                          </Link>
                         </div>
                     </div>
                 </Section>
@@ -275,7 +264,7 @@ const LandingPage = () => {
                             Your voice matters. Take part in programs, share your ideas, and help build a better barangay.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/auth/register" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-dark-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">
+                            <Link href="/auth" className="px-10 py-5 rounded-2xl bg-theme-white text-theme-dark-blue font-bold text-xl hover:shadow-2xl hover:bg-blue-50 transition cursor-pointer text-center">
                                 Get Started for Free
                             </Link>
                         </div>

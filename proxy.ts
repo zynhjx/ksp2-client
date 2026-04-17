@@ -3,106 +3,92 @@ import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-const protectedRoutes = [
-  "/home",
-  "/dashboard",
-  "/programs",
-  "/suggestions",
-  "/announcements",
-  "/onboarding"
-];
-const roleBasedRoute = [
-  "/home",
-  "/dashboard",
-  "/programs",
-  "/suggestions",
-  "/announcements",
-  "/"
-]
+const jwtSecretString = process.env.JWT_SECRET;
+const expressApiUrl = process.env.NEXT_PUBLIC_EXPRESS_API_URL;
 
-type PayloadType = { 
-  payload: 
-    { 
-      id: number, 
-      email: string, 
-      role: "youth" | "sk" | "admin", 
-      status: "pending" | "active", 
-      type: "access"
-    }
+if (!jwtSecretString) {
+  throw new Error("Missing JWT_SECRET environment variable")
 }
 
-const isProd = process.env.NODE_ENV === 'production'
+if (!expressApiUrl) {
+  throw new Error("Missing NEXT_PUBLIC_EXPRESS_API_URL environment variable")
+}
+
+const JWT_SECRET = new TextEncoder().encode(jwtSecretString);
+const isProd = process.env.NODE_ENV === "production";
+const cookieDomain = isProd ? "kabataanprofile.com" : "kabataanprofile.test";
+
+// Routes that require authentication
+const protectedRoutePrefixes = ["/home", "/programs", "/suggestions", "/announcements"];
+const authRoutes = ["/auth"];
+
+type PayloadType = {
+  payload: {
+    id: number;
+    email: string;
+    role: "youth" | "sk" | "admin";
+    status: "pending" | "active";
+    type: "access";
+  };
+};
 
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const accessToken = req.cookies.get("accessToken")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
-  const isProtectedRoute = protectedRoutes.some((r) => pathname.startsWith(r));
-  const isRoleBasedRoute = roleBasedRoute.some((route) => pathname === route);
-  const isAuthRoute = pathname.startsWith("/auth");
-  const isOnboardingRoute = pathname.startsWith("/onboarding")
-  const requiresAuth = isProtectedRoute || isAuthRoute;
-  const host =
-    req.headers.get("x-forwarded-host") ||
-    req.headers.get("host") ||
-    "";
-  const hostname = host.split(":")[0];
-  const parts = hostname.split(".");
-  const subdomain = parts.length > 2 ? parts[0] : null;
-  const url = req.nextUrl.clone();
-  const blockedPaths = ["/youth", "/sk", "/admin"];
-  const isPublicRoute = !isProtectedRoute && !isAuthRoute && !isOnboardingRoute;
-  const roleRedirectMap: Record<string, string> = {
-    admin: "/dashboard",
-    sk: "/dashboard",
-    youth: "/home", // or "/"
-  };
 
+  // Check route types
+  const isProtectedRoute = protectedRoutePrefixes.some((prefix) =>
+    pathname.startsWith(prefix)
+  );
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isOnboardingRoute = pathname.startsWith("/onboarding");
+  const requiresAuth = isProtectedRoute || isOnboardingRoute || isAuthRoute;
 
-  if (blockedPaths.some((path) => pathname.startsWith(path))) {
-    return NextResponse.rewrite(new URL("/404", req.url));
-  }
 
   if (requiresAuth) {
-    
     if (accessToken) {
       try {
-        const { payload } : PayloadType = await jwtVerify(accessToken, JWT_SECRET);
+        const { payload }: PayloadType = await jwtVerify(
+          accessToken,
+          JWT_SECRET
+        );
 
+        if (payload.role !== "youth") {
+          if (isAuthRoute) {
+            return NextResponse.next()
+          }
+          return NextResponse.redirect(new URL("/auth", req.url))
+        }
+
+        // If pending status, redirect to onboarding
         if (payload.status === "pending") {
           if (isOnboardingRoute) {
             return NextResponse.next();
           }
-          return NextResponse.redirect(new URL('/onboarding', req.url));
+          return NextResponse.redirect(new URL("/onboarding", req.url));
         }
 
-        console.log("hi")
-
+      
+        // If already authenticated and trying to access auth/onboarding, redirect to home
         if (isAuthRoute || isOnboardingRoute) {
-          console.log("this one")
-          const redirectPath = roleRedirectMap[payload.role] || "/";
-          return NextResponse.redirect(new URL(redirectPath, req.url));
+          return NextResponse.redirect(new URL("/home", req.url));
         }
 
-
+        return NextResponse.next();
       } catch (error) {
-        
-        console.log(error)
+        console.error("Token verification failed:", error);
         if (isAuthRoute) {
-          return NextResponse.next()
+          return NextResponse.next();
         }
         return NextResponse.redirect(new URL("/auth", req.url));
       }
-      
-    } else if (refreshToken) {
-      if (isPublicRoute) {
-        return NextResponse.next();
-      }
-
+    } 
+    
+    if (refreshToken) {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/refresh`, {
-          method: 'POST',
+        const res = await fetch(`${expressApiUrl}/api/auth/middleware/refresh`, {
+          method: "POST",
           headers: {
             Cookie: `refreshToken=${refreshToken}`,
           },
@@ -115,59 +101,63 @@ export default async function proxy(req: NextRequest) {
             throw new Error("Invalid refresh response");
           }
 
-          const { payload }: PayloadType = await jwtVerify(data.accessToken, JWT_SECRET)
+          const { payload }: PayloadType = await jwtVerify(
+            data.accessToken,
+            JWT_SECRET
+          );
 
-          let response
+          if (payload.role !== "youth") {
+            if (isAuthRoute) {
+              return NextResponse.next()
+            }
+            return NextResponse.redirect(new URL("/auth", req.url))
+          }
+          
+          let response: NextResponse;
+
           if (payload.status === "pending") {
             if (isOnboardingRoute) {
               response = NextResponse.next();
             } else {
-              response = NextResponse.redirect(new URL('/onboarding', req.url));
+              response = NextResponse.redirect(new URL("/onboarding", req.url));
             }
-            
           } else {
             if (isAuthRoute || isOnboardingRoute) {
-              const redirectPath = roleRedirectMap[payload.role] || "/";
-              response = NextResponse.redirect(new URL(redirectPath, req.url));
-
-            } else if (isProtectedRoute) {
-              response = NextResponse.next();
+              response = NextResponse.redirect(new URL("/home", req.url));
             } else {
               response = NextResponse.next();
             }
-            
           }
 
-          response.cookies.set('accessToken', data.accessToken, {
+          response.cookies.set("accessToken", data.accessToken, {
             httpOnly: true,
             secure: isProd,
             sameSite: "lax",
-            path: '/',
+            path: "/",
             maxAge: 5 * 60,
-            domain: isProd ? "kabataanprofile.com" : "kabataanprofile.test"
+            domain: cookieDomain,
           });
 
-          response.cookies.set('refreshToken', data.refreshToken, {
+          response.cookies.set("refreshToken", data.refreshToken, {
             httpOnly: true,
             secure: isProd,
             sameSite: "lax",
-            path: '/',
+            path: "/",
             maxAge: 7 * 24 * 60 * 60,
-            domain: isProd ? "kabataanprofile.com" : "kabataanprofile.test"
+            domain: cookieDomain,
           });
 
           return response;
         }
 
         if (isAuthRoute) {
-          return NextResponse.next()
+          return NextResponse.next();
         }
         return NextResponse.redirect(new URL("/auth", req.url));
-
       } catch (error) {
-        console.log(error)
+        console.error("Token refresh failed:", error);
         if (isAuthRoute) {
-          return NextResponse.next()
+          return NextResponse.next();
         }
         return NextResponse.redirect(new URL("/auth", req.url));
       }
@@ -179,21 +169,7 @@ export default async function proxy(req: NextRequest) {
     }
   }
 
-  if (isRoleBasedRoute) {
-    if (subdomain === "admin") {
-      url.pathname = `/admin${url.pathname}`;
-    } else if (subdomain === "sk") {
-      url.pathname = `/sk${url.pathname}`;
-    } else if (!subdomain) {
-      url.pathname = `/youth${url.pathname}`;
-    } else {
-      return NextResponse.rewrite(new URL("/404", req.url));
-    }
-
-    return NextResponse.rewrite(url)
-  }
   return NextResponse.next();
-  
 }
 
 // Only run middleware on relevant pages

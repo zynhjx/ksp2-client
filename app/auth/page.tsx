@@ -149,9 +149,9 @@ const RegisterPage = () => {
 	const [success, setSuccess] = useState(false)
 	const [pendingResend, setPendingResend] = useState(false)
   const roleRedirectMap: Record<string, string> = {
-    admin: "/dashboard",
-    sk: "/dashboard",
-    youth: "/home", // or "/"
+    admin: "/admin/dashboard",
+    sk: "/admin/dashboard",
+    youth: "/youth/home", // or "/"
   };
 
   const router = useRouter()
@@ -258,8 +258,7 @@ const RegisterPage = () => {
 
 			setSuccess(true)
 			toast.success(data.message)
-      const redirectPath = roleRedirectMap[data.user.role] || "/";
-      return router.replace(redirectPath);
+      return router.replace("/home");
 
 		} catch (error) {
 			console.error("Error: ", error);
