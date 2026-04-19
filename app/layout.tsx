@@ -9,7 +9,7 @@ import PublicFooter from "@/components/PublicFooter";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "KSKP - Youth",
+  title: "KSK - Youth",
   icons: {
     icon: "/LogoIconDark.svg"
   },
