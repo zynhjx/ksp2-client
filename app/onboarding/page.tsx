@@ -174,15 +174,18 @@ const OnboardingPage = () => {
         throw new Error(data.message || "Something went wrong");
       }
 
-      Swal.fire({
-        title: "Success!",
-        text: "Profile completed",
-        icon: "success",
-        timer: 1200,
-        showConfirmButton: false,
-      }).then(() => {
-        return router.replace("/home")
+      const result = await Swal.fire({
+        title: "Registration Submitted",
+        text: "Please wait for the SK official to approve your registration. Click Yes to continue to login.",
+        icon: "info",
+        confirmButtonText: "Yes",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
       });
+
+      if (result.isConfirmed) {
+        router.replace("/auth/login");
+      }
 
     } catch (error) {
       console.error("Error submitting form:", error);
