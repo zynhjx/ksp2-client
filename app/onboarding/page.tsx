@@ -159,7 +159,7 @@ const OnboardingPage = () => {
 
     try {
       setSubmitPending(true)
-      const res = await apiFetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/onboarding`, {
+      const res = await apiFetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/youth/onboarding`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
