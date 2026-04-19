@@ -11,6 +11,9 @@ type User = {
   first_name: string
   last_name: string
   gender: string
+  education?: string
+  employment_status?: string
+  date_of_birth?: string
 }
 
 type AuthContextType = {

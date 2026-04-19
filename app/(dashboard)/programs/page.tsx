@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import ProgramCard from "@/components/ProgramCard"
 import {
   Select,
@@ -9,69 +10,97 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-const programs = [
-  {
-    id: "1",
-    name: "Community Health Drive",
-    status: "Ongoing",
-    category: "Health",
-    location: "Barangay Center",
-    description:
-      "A community health initiative offering free check-ups, counseling, and nutrition guidance for residents.",
-    createdAt: "2025-03-18T10:00:00Z",
-    participants: 156,
-    startDate: "2025-04-01T08:00:00Z",
-    untilDate: "2025-04-15T17:00:00Z",
-  },
-  {
-    id: "2",
-    name: "Youth Leadership Workshop",
-    status: "Upcoming",
-    category: "Education",
-    location: "City Hall Annex",
-    description:
-      "A leadership training workshop for young people who want to become active community leaders and civic volunteers.",
-    createdAt: "2025-02-28T14:30:00Z",
-    participants: 48,
-    startDate: "2025-05-05T09:00:00Z",
-    untilDate: "2025-05-05T16:00:00Z",
-  },
-  {
-    id: "3",
-    name: "Livelihood Skills Training",
-    status: "Completed",
-    category: "Livelihood",
-    location: "Training Center",
-    description:
-      "A practical livelihood program that teaches basic sewing, baking, and small business planning for youth entrepreneurs.",
-    createdAt: "2025-01-20T09:00:00Z",
-    participants: 72,
-    startDate: "2025-02-01T08:00:00Z",
-    untilDate: "2025-02-14T16:00:00Z",
-  },
-  {
-    id: "4",
-    name: "Barangay Tree Planting",
-    status: "Upcoming",
-    category: "Environment",
-    location: "River Park",
-    description:
-      "A tree planting drive focused on restoring green spaces, reducing pollution, and involving youth volunteers.",
-    createdAt: "2025-03-05T12:00:00Z",
-    participants: 32,
-    startDate: "2025-05-12T07:30:00Z",
-    untilDate: "2025-05-12T12:00:00Z",
-  },
-]
+import { fetchYouthPrograms, type YouthProgram } from "@/lib/youthPrograms"
 
 const statusOptions = ["All", "Ongoing", "Upcoming", "Completed"]
-const categoryOptions = ["All", "Health", "Education", "Livelihood", "Environment"]
+const categoryOptions = [
+  "All",
+  "Health",
+  "Education",
+  "Livelihood",
+  "Environment",
+  "Community",
+  "Youth",
+  "Sports",
+  "Technology",
+  "Culture",
+  "Safety",
+  "Welfare",
+  "Employment",
+  "Agriculture",
+  "Innovation",
+  "Infrastructure",
+  "Outreach",
+  "Disaster",
+  "Nutrition",
+  "Tourism",
+  "Governance",
+];
 
 const Programs = () => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const apiBase = process.env.NEXT_PUBLIC_EXPRESS_API_URL
+
+  const rawFilter = searchParams.get("filter")
+  const normalizedFilter = rawFilter?.trim().toLowerCase() ?? ""
+
+  const statusFilterMap: Record<string, string> = {
+    all: "All",
+    ongoing: "Ongoing",
+    upcoming: "Upcoming",
+    completed: "Completed",
+    joined: "Ongoing",
+  }
+
+  const initialStatusFilter = statusFilterMap[normalizedFilter] ?? "All"
+  const initialCategoryFilter =
+    categoryOptions.find((option) => option.toLowerCase() === normalizedFilter) ?? "All"
+
   const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState("All")
-  const [categoryFilter, setCategoryFilter] = useState("All")
+  const [statusFilter, setStatusFilter] = useState(initialStatusFilter)
+  const [categoryFilter, setCategoryFilter] = useState(
+    initialStatusFilter !== "All" ? "All" : initialCategoryFilter
+  )
+  const [programs, setPrograms] = useState<YouthProgram[]>([])
+  const [loadingPrograms, setLoadingPrograms] = useState(true)
+  const [loadError, setLoadError] = useState("")
+
+  useEffect(() => {
+    let active = true
+
+    const loadPrograms = async () => {
+      const result = await fetchYouthPrograms(apiBase)
+      if (!active) return
+
+      if (!result.ok) {
+        if (result.status === 403 && result.reason === "pending_activation") {
+          router.replace("/activation-pending")
+          return
+        }
+
+        if (result.status === 403 && result.reason === "account_suspended") {
+          router.replace("/403?reason=account_suspended")
+          return
+        }
+
+        setPrograms([])
+        setLoadError(result.message)
+        setLoadingPrograms(false)
+        return
+      }
+
+      setPrograms(result.data)
+      setLoadError("")
+      setLoadingPrograms(false)
+    }
+
+    void loadPrograms()
+
+    return () => {
+      active = false
+    }
+  }, [apiBase, router])
 
   const filteredPrograms = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -91,37 +120,8 @@ const Programs = () => {
 
       return matchesSearch && matchesStatus && matchesCategory
     })
-  }, [search, statusFilter, categoryFilter])
+  }, [programs, search, statusFilter, categoryFilter])
 
-  const filterComponents = (
-    <>
-      <Select value={statusFilter} onValueChange={setStatusFilter}>
-        <SelectTrigger className="w-40 h-12.5! bg-white! border border-gray-200 rounded-sm px-4">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          {statusOptions.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-        <SelectTrigger className="w-40 h-12.5! bg-white! border border-gray-200 rounded-sm px-4">
-          <SelectValue placeholder="Category" />
-        </SelectTrigger>
-        <SelectContent>
-          {categoryOptions.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </>
-  )
 
   return (
     <>
@@ -133,7 +133,7 @@ const Programs = () => {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col lg:flex-row gap-2">
           <input
             type="text"
             value={search}
@@ -143,12 +143,44 @@ const Programs = () => {
           />
 
           <div className="flex gap-2">
-            {filterComponents}
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <SelectTrigger className="w-40 h-12.5! bg-white! border border-gray-200 rounded-sm px-4">
+          <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {statusOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-40 h-12.5! bg-white! border border-gray-200 rounded-sm px-4">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categoryOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           </div>
         </div>
       </div>
 
-      {filteredPrograms.length === 0 ? (
+      {loadingPrograms ? (
+        <div className="rounded-2xl border border-dashed border-gray-300 bg-theme-card-white p-8 text-center text-gray-500">
+          Loading programs...
+        </div>
+      ) : loadError ? (
+        <div className="rounded-2xl border border-dashed border-red-300 bg-theme-card-white p-8 text-center text-red-600">
+          {loadError}
+        </div>
+      ) : filteredPrograms.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-theme-card-white p-8 text-center text-gray-500">
           No programs match your search or filters.
         </div>

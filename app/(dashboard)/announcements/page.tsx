@@ -1,7 +1,12 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import AnnouncementCard from "@/components/AnnouncementCard"
+import {
+  fetchYouthAnnouncements,
+  type YouthAnnouncement,
+} from "@/lib/youthAnnouncements"
 import {
   Select,
   SelectContent,
@@ -10,77 +15,53 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-type Announcement = {
-  id: string
-  title: string
-  type: "important" | "event" | "info" | "reminder"
-  content: string
-  postedAt: string
-  postedBy: string
-}
-
-const announcements: Announcement[] = [
-  {
-    id: "1",
-    title: "SK Fitness Challenge 2025 Registration Open",
-    type: "event",
-    content:
-      "Calling all youth! The SK Fitness Challenge 2025 is now accepting registrations. This is a 4-week challenge featuring cardio, strength training, and flexibility exercises. Winners will receive prizes and recognition. Register at the SK Office before April 30.",
-    postedAt: "2025-04-10T09:30:00Z",
-    postedBy: "SK Council",
-  },
-  {
-    id: "2",
-    title: "Important: Curfew Policy Update",
-    type: "important",
-    content:
-      "Effective April 15, 2025, the barangay curfew policy has been updated. Youth aged 16-17 must be home by 10:00 PM on school nights. For questions or concerns, please contact the SK Office.",
-    postedAt: "2025-04-08T14:00:00Z",
-    postedBy: "Barangay Hall",
-  },
-  {
-    id: "3",
-    title: "Community Cleanup Drive This Saturday",
-    type: "reminder",
-    content:
-      "Reminder: We are hosting a barangay cleanup drive this Saturday at 7:00 AM in the plaza. Bring your own gloves and tools. Free breakfast will be provided. All youth are welcome and encouraged to participate!",
-    postedAt: "2025-04-09T11:15:00Z",
-    postedBy: "Environmental Committee",
-  },
-  {
-    id: "4",
-    title: "New Scholarship Program Launched",
-    type: "info",
-    content:
-      "Good news! A new scholarship program is now available for eligible youth pursuing higher education. The program covers tuition fees and provides a monthly allowance. Interested applicants should submit their applications by May 15, 2025.",
-    postedAt: "2025-04-07T10:45:00Z",
-    postedBy: "SK Council",
-  },
-  {
-    id: "5",
-    title: "Sports Night - Volleyball Tournament",
-    type: "event",
-    content:
-      "Join us for an exciting volleyball tournament next week! Teams of 6 players per side are welcome. Registration is free and open until April 20. Come support your barangay and have fun with fellow youth!",
-    postedAt: "2025-04-06T15:20:00Z",
-    postedBy: "Sports Committee",
-  },
-  {
-    id: "6",
-    title: "Profile Data Update Reminder",
-    type: "reminder",
-    content:
-      "Heads up! Please update your profile information if any of your details have changed. Accurate data helps us serve you better. Visit your profile settings to review and update your information.",
-    postedAt: "2025-04-05T08:00:00Z",
-    postedBy: "SK Council",
-  },
-]
-
-const typeOptions = ["All", "Important", "Event", "Info", "Reminder"]
+const typeOptions = ["All", "General", "Event", "Urgent", "Reminder", "Opportunity"]
 
 const Announcements = () => {
+  const router = useRouter()
+  const apiBase = process.env.NEXT_PUBLIC_EXPRESS_API_URL
+
+  const [announcements, setAnnouncements] = useState<YouthAnnouncement[]>([])
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true)
+  const [loadError, setLoadError] = useState("")
   const [search, setSearch] = useState("")
   const [typeFilter, setTypeFilter] = useState("All")
+
+  useEffect(() => {
+    let active = true
+
+    const loadAnnouncements = async () => {
+      const result = await fetchYouthAnnouncements(apiBase)
+      if (!active) return
+
+      if (!result.ok) {
+        if (result.status === 403 && result.reason === "pending_activation") {
+          router.replace("/activation-pending")
+          return
+        }
+
+        if (result.status === 403 && result.reason === "account_suspended") {
+          router.replace("/403?reason=account_suspended")
+          return
+        }
+
+        setAnnouncements([])
+        setLoadError(result.message)
+        setLoadingAnnouncements(false)
+        return
+      }
+
+      setAnnouncements(result.data)
+      setLoadError("")
+      setLoadingAnnouncements(false)
+    }
+
+    void loadAnnouncements()
+
+    return () => {
+      active = false
+    }
+  }, [apiBase, router])
 
   const filteredAnnouncements = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -98,7 +79,7 @@ const Announcements = () => {
 
       return matchesSearch && matchesType
     })
-  }, [search, typeFilter])
+  }, [announcements, search, typeFilter])
 
   return (
     <>
@@ -125,7 +106,7 @@ const Announcements = () => {
 
           <div className="flex gap-2">
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-40 h-12 bg-white border border-gray-200 rounded-sm px-4">
+              <SelectTrigger className="w-48 h-12.5! bg-white! border border-gray-200 rounded-sm px-4">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -140,12 +121,20 @@ const Announcements = () => {
         </div>
       </div>
 
-      {filteredAnnouncements.length === 0 ? (
+      {loadingAnnouncements ? (
+        <div className="rounded-2xl border border-dashed border-gray-300 bg-theme-card-white p-8 text-center text-gray-500">
+          Loading announcements...
+        </div>
+      ) : loadError ? (
+        <div className="rounded-2xl border border-dashed border-red-300 bg-theme-card-white p-8 text-center text-red-600">
+          {loadError}
+        </div>
+      ) : filteredAnnouncements.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-theme-card-white p-8 text-center text-gray-500">
           No announcements match your search or filters.
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           {filteredAnnouncements.map((announcement) => (
             <AnnouncementCard key={announcement.id} announcement={announcement} />
           ))}

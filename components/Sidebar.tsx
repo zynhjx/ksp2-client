@@ -3,15 +3,15 @@
 import {
   CircleUser,
   LogOutIcon,
-  HomeIcon,
   LucideIcon,
   LucideLayoutDashboard,
-  Calendar,
-  LightbulbIcon,
+  ClipboardListIcon,
+  MessageSquareIcon,
   Sidebar as SidebarIcon,
   ChevronRight,
-  Megaphone,
-  ChevronUp
+  MegaphoneIcon,
+  ChevronUp,
+  HomeIcon
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +21,11 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,26 +56,13 @@ const toTitleCase = (str: string = "") => {
 };
 
 const youthNavs = [
-  {name: "Home", icon: LucideLayoutDashboard, path: "/home"},
-  {name: "Programs", icon: Calendar, path: "/programs"},
-  {name: "Suggestions", icon: LightbulbIcon, path: "/suggestions"},
-  {name: "Announcements", icon: Megaphone, path: "/announcements"}
+  {name: "Home", icon: HomeIcon, path: "/home"},
+  {name: "Programs", icon: ClipboardListIcon, path: "/programs"},
+  {name: "Suggestions", icon: MessageSquareIcon, path: "/suggestions"},
+  {name: "Announcements", icon: MegaphoneIcon, path: "/announcements"}
 ]
 
-const skNavs = [
-  {name: "Dashboard", icon: LucideLayoutDashboard, path: "/dashboard"},
-  {name: "Programs", icon: HomeIcon, path: "home"},
-  {name: "Suggestions", icon: HomeIcon, path: "dwadaw"},
-]
-
-const adminNavs = [
-  {name: "Dashboard", icon: LucideLayoutDashboard, path: "/dashboard"},
-  {name: "Programs", icon: HomeIcon, path: "home"},
-  {name: "Suggestions", icon: HomeIcon, path: "dwadaw"},
-]
-
-
-const Sidebar = ({ type } : { type: string }) => {
+const Sidebar = () => {
   const pathname = usePathname();
   const { isOpen, toggleSidebar, closeSidebar } = useSidebar()
   const { user, setUser } = useAuth()
@@ -91,37 +83,31 @@ const Sidebar = ({ type } : { type: string }) => {
     return () => media.removeEventListener("change", listener);
   }, []);
 
-  const userNavs = () => {
-    if (type === "admin") {
-      return adminNavs
-    } else if (type === "sk") {
-      return skNavs
-    } else {
-      return youthNavs
-    }
-  }
-
   const handleLogout = async () => {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include", // include cookies if using session/cookie auth
+        headers: {
+          "x-app-type": "youth"
+        }
       });
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
       setUser(null); // clears auth context regardless of response
-      router.push("/auth")
+      router.push("/auth/login")
     }
     
   };
 
   return (
     <aside className={twMerge(
-      "overflow-visible absolute top-0 bottom-0 left-0 xl:static bg-theme-white text-black box-border flex flex-col z-50 border-r border-gray-300",
+      "overflow-visible absolute top-0 bottom-0 left-0 xl:relative bg-theme-white text-black box-border flex flex-col z-50",
       isOpen ? "w-70" : "w-auto",
       !isOpen && "max-w-18 -translate-x-full md:translate-x-0"
     )}>
+      <div className="absolute border-r border-gray-300 h-full right-0 top-0"/>
       <header className={twMerge(
         "bg-transparent h-12.5 flex relative items-center p-3 box-content border-gray-300 border-b"
       )}>
@@ -140,7 +126,7 @@ const Sidebar = ({ type } : { type: string }) => {
         </div>
         <button onClick={() => toggleSidebar()}
           className={twMerge(
-            "p-3 cursor-pointer hover:bg-white/10 rounded-2xl border-none",
+            "p-3 cursor-pointer hover:bg-theme-blue/20 rounded-2xl border-none",
             isOpen && "ml-auto"
           )
         }>
@@ -151,26 +137,48 @@ const Sidebar = ({ type } : { type: string }) => {
         "p-3 overflow-hidden box-border",
 
       )}>
-        <ul className={"flex flex-col gap-y-3"}>
-          {userNavs().map((nav: {name: string, icon: LucideIcon, path: string}) => (
-            <li key={nav.name}>
-              <Link href={nav.path}
+        <ul className="flex flex-col gap-y-3">
+          {youthNavs.map((nav: { name: string; icon: LucideIcon; path: string }) => {
+            const isActive = pathname === nav.path;
+
+            const link = (
+              <Link
+                href={nav.path}
                 onClick={isMobile ? () => closeSidebar() : undefined}
                 className={twMerge(
-                "flex gap-x-4 p-3 rounded-xl items-center",
-                pathname !== nav.path && "hover:bg-theme-dark-blue/20",
-                pathname === nav.path && "bg-theme-dark-blue text-white"
-              )}>
-                <nav.icon
-                  size={24}
-                />
-                <span className={twMerge(!isOpen && "hidden", "text-sm")}>{nav.name}</span>
-                {pathname === nav.path && isOpen && (
-                  <ChevronRight size={20} color={"white"} className={"ml-auto"}/>
+                  "flex gap-x-4 p-3 rounded-xl items-center transition-colors",
+                  !isOpen && "justify-center",
+                  !isActive && "hover:bg-theme-dark-blue/20",
+                  isActive && "bg-theme-dark-blue text-white"
+                )}
+              >
+                <nav.icon size={24} />
+                {isOpen && <span className="text-sm">{nav.name}</span>}
+
+                {isActive && isOpen && (
+                  <ChevronRight size={20} className="ml-auto text-white" />
                 )}
               </Link>
-            </li>
-          ))}
+            );
+
+            return (
+              <li key={nav.name}>
+                {isOpen ? (
+                  link
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>{link}</TooltipTrigger>
+                    <TooltipContent
+                      side="right"
+                      className="bg-theme-blue text-white border-none"
+                    >
+                      {nav.name}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </nav>
       <footer
@@ -210,7 +218,15 @@ const Sidebar = ({ type } : { type: string }) => {
                   </div>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuItem className="p-2"><CircleUser /> Profile</DropdownMenuItem>
+              <DropdownMenuItem
+                className="p-2"
+                onSelect={() => {
+                  router.push("/profile")
+                  if (isMobile) closeSidebar()
+                }}
+              >
+                <CircleUser /> Profile
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

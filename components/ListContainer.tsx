@@ -1,26 +1,25 @@
 
 import { twMerge } from "tailwind-merge"
 
-type ListItem = {
-  id: number
-  name: string
-}
-
 type ListContainerProps = {
   title: string
-  list: ListItem[] | null
   onViewAll?: () => void
   viewAllLabel?: string
+  className?: string
+  children: React.ReactNode
 }
 
 const ListContainer = ({
   title,
-  list,
   onViewAll,
+  className,
+  children,
   viewAllLabel = "View all",
 }: ListContainerProps) => {
   return (
-    <section className="bg-theme-card-white shadow-sm rounded-2xl p-5">
+    <section className={twMerge("flex flex-col bg-theme-card-white shadow-sm rounded-2xl p-5",
+      className
+    )}>
       <div className="flex items-center justify-between gap-4 mb-4">
         <h2 className="text-lg font-semibold text-theme-blue">{title}</h2>
         <button
@@ -31,19 +30,7 @@ const ListContainer = ({
           {viewAllLabel}
         </button>
       </div>
-      <div 
-        className={twMerge("flex flex-col h-70",
-          !list && "justify-center items-center"
-        )}
-      >
-        {!list ? (
-          <p>No items yet.</p>
-        ) : (
-          list.map((l) => (
-            <div key={l.id}>{l.name}</div>
-          ))
-        )}
-      </div>
+      {children}
     </section>
   )
 }

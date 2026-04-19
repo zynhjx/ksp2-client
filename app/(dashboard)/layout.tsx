@@ -5,6 +5,8 @@ import { SidebarProvider } from "@/context/SidebarContext";
 import Overlay from "@/components/Overlay";
 import { AuthProvider } from "@/context/AuthContext";
 import { cookies } from "next/headers";
+import { apiFetch } from "@/lib/api";
+
 
 type User = {
   id: string
@@ -15,6 +17,9 @@ type User = {
   first_name: string
   last_name: string
   gender: string
+  education?: string
+  employment_status?: string
+  date_of_birth?: string
 }
 
 async function getUser(): Promise<User | null> {
@@ -24,7 +29,7 @@ async function getUser(): Promise<User | null> {
 
     if (!token) return null
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/me`, {
+    const res = await apiFetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/me`, {
       headers: {
         Cookie: `accessToken=${token.value}`,
       },
@@ -51,8 +56,8 @@ const Layout = async ({children}: {children: ReactNode} ) => {
     <AuthProvider initialUser={user}>
       <div className="w-screen h-screen bg-theme-white flex">
         <SidebarProvider>
-          <Sidebar type={"youth"}/>
-          <main className="pt-25 md:pt-6 md:ml-18 xl:ml-0 bg-theme-white flex-1 p-8 overflow-y-scroll">
+          <Sidebar/>
+          <main className="mt-20 md:pt-6 md:mt-0 md:ml-18 xl:ml-0 bg-theme-white flex-1 p-8 overflow-y-scroll">
             <Overlay/>
             <MobileHeader/>
             {children}

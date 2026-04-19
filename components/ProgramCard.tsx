@@ -50,13 +50,6 @@ const ProgramCard = ({ program }: ProgramCardProps) => {
       hour12: true,
     })
 
-  const getStatusColor = (status: string) => {
-    const s = status.toLowerCase()
-    if (s === 'ongoing') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-    if (s === 'upcoming' || s === 'not started') return 'bg-blue-50 text-blue-700 border-blue-200'
-    return 'bg-gray-100 text-gray-500 border-gray-200'
-  }
-
   const getCategoryColor = (category: string) => {
     const map: Record<string, string> = {
       health: 'bg-rose-50 text-rose-700 border-rose-200',
@@ -72,8 +65,6 @@ const ProgramCard = ({ program }: ProgramCardProps) => {
 
   return (
     <article className="group relative border border-gray-200 rounded-2xl bg-white flex flex-col gap-0 overflow-hidden shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200">
-      
-
       <div className="flex flex-col gap-3 p-4">
         {/* Title + Category */}
         <div className="flex items-start justify-between gap-2">
@@ -99,11 +90,11 @@ const ProgramCard = ({ program }: ProgramCardProps) => {
         <div className="grid grid-cols-2 gap-x-4 gap-y-3">
           <MetaItem label="Status" value={program.status} />
           <MetaItem label="Location" value={program.location} />
-          <MetaItem label="Participants" value={program.participants.toLocaleString()} />
           <MetaItem label="Created" value={formatDate(program.createdAt)} />
           <MetaItem label="Start" value={formatDateTime(program.startDate)} />
           <MetaItem label="Until" value={formatDateTime(program.untilDate)} />
         </div>
+
       </div>
     </article>
   )

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import SuggestionCard from "@/components/SuggestionCard"
 import {
   Select,
@@ -20,89 +21,12 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
-
-const mockSuggestions = [
-  {
-    id: "1",
-    title: "Improve Street Lighting in Barangay",
-    category: "Community / Social",
-    description: "Many areas in our barangay lack adequate street lighting, making it unsafe for residents to walk at night.",
-    suggestedSolution: "Install LED street lights on major streets and pathways. Consider solar-powered options for cost efficiency.",
-    location: "Main Street, Various Areas",
-    submittedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    submittedBy: "Maria Santos",
-    likesCount: 24,
-    liked: false,
-    status: "Pending",
-  },
-  {
-    id: "2",
-    title: "Free Coding Bootcamp for Youth",
-    category: "Education",
-    description: "Many young residents lack digital skills needed for modern employment opportunities.",
-    suggestedSolution: "Partner with tech companies to offer free 3-month coding bootcamps every quarter.",
-    location: "Barangay Hall, Room 2",
-    submittedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    submittedBy: "Juan dela Cruz",
-    likesCount: 41,
-    liked: true,
-    status: "Accepted",
-  },
-  {
-    id: "3",
-    title: "Monthly Free Medical Checkup",
-    category: "Health",
-    description: "Residents with low income cannot afford regular checkups, leading to undetected illnesses.",
-    suggestedSolution: "Coordinate with the RHU to hold monthly free checkup drives in the covered court.",
-    location: "Covered Court",
-    submittedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-    submittedBy: "Ana Reyes",
-    likesCount: 58,
-    liked: false,
-    status: "Pending",
-  },
-  {
-    id: "4",
-    title: "Livelihood Training for Unemployed",
-    category: "Employment",
-    description: "A number of residents are unemployed and lack vocational skills to find stable work.",
-    suggestedSolution: "Offer TESDA-accredited short courses on welding, electrician work, and food processing.",
-    location: "Skills Training Center",
-    submittedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    submittedBy: "Roberto Lim",
-    likesCount: 33,
-    liked: false,
-    status: "Declined",
-  },
-  {
-    id: "5",
-    title: "Community Clean-Up Drive",
-    category: "Environment",
-    description: "Esteros and vacant lots are being used as illegal dumpsites causing flooding and health hazards.",
-    suggestedSolution: "Organize monthly clean-up drives with incentives like grocery packages for active participants.",
-    location: "Estero & Surrounding Areas",
-    submittedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    submittedBy: "Ligaya Cruz",
-    likesCount: 19,
-    liked: true,
-    status: "Pending",
-  },
-  {
-    id: "6",
-    title: "Basketball League for Teens",
-    category: "Sports",
-    description: "Teenagers have no structured activities after school, increasing risk of delinquency.",
-    suggestedSolution: "Launch a quarterly inter-sitio basketball league open to ages 13–19 with trophies and prizes.",
-    location: "Barangay Basketball Court",
-    submittedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    submittedBy: "Carlo Mendoza",
-    likesCount: 47,
-    liked: false,
-    status: "Accepted",
-  },
-]
+import {
+  createYouthSuggestion,
+  fetchYouthSuggestions,
+  type YouthSuggestion,
+} from "@/lib/youthSuggestions"
 
 const EMPTY_FORM = {
   title: "",
@@ -110,27 +34,103 @@ const EMPTY_FORM = {
   description: "",
   suggestedSolution: "",
   location: "",
-  anonymous: true,
 }
 
 const Suggestions = () => {
+  const router = useRouter()
+  const apiBase = process.env.NEXT_PUBLIC_EXPRESS_API_URL
+
+  const [suggestions, setSuggestions] = useState<YouthSuggestion[]>([])
+  const [loadingSuggestions, setLoadingSuggestions] = useState(true)
+  const [loadError, setLoadError] = useState("")
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("")
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
+  const [submitPending, setSubmitPending] = useState(false)
+  const [submitError, setSubmitError] = useState("")
 
-  const set = (field: string, value: string | boolean) =>
+  useEffect(() => {
+    let active = true
+
+    const loadSuggestions = async () => {
+      const result = await fetchYouthSuggestions(apiBase)
+      if (!active) return
+
+      if (!result.ok) {
+        if (result.status === 403 && result.reason === "pending_activation") {
+          router.replace("/activation-pending")
+          return
+        }
+
+        if (result.status === 403 && result.reason === "account_suspended") {
+          router.replace("/403?reason=account_suspended")
+          return
+        }
+
+        setSuggestions([])
+        setLoadError(result.message)
+        setLoadingSuggestions(false)
+        return
+      }
+
+      setSuggestions(result.data)
+      setLoadError("")
+      setLoadingSuggestions(false)
+    }
+
+    void loadSuggestions()
+
+    return () => {
+      active = false
+    }
+  }, [apiBase, router])
+
+  const set = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
 
-  const handleSubmit = () => {
-    // TODO: submit form data
-    console.log(form)
+  const handleSubmit = async () => {
+    if (!isValid) return
+
+    setSubmitPending(true)
+    setSubmitError("")
+
+    const result = await createYouthSuggestion(apiBase, {
+      title: form.title.trim(),
+      category: form.category.trim(),
+      description: form.description.trim(),
+      suggestedSolution: form.suggestedSolution.trim(),
+      location: form.location.trim(),
+    })
+
+    if (!result.ok) {
+      if (result.status === 403 && result.reason === "pending_activation") {
+        router.replace("/activation-pending")
+        return
+      }
+
+      if (result.status === 403 && result.reason === "account_suspended") {
+        router.replace("/403?reason=account_suspended")
+        return
+      }
+
+      setSubmitError(result.message)
+      setSubmitPending(false)
+      return
+    }
+
+    if (result.data) {
+      setSuggestions((prev) => [result.data as YouthSuggestion, ...prev])
+    }
+
     setForm(EMPTY_FORM)
     setOpen(false)
+    setSubmitPending(false)
   }
 
   const handleCancel = () => {
     setForm(EMPTY_FORM)
+    setSubmitError("")
     setOpen(false)
   }
 
@@ -141,26 +141,34 @@ const Suggestions = () => {
     form.suggestedSolution.trim() &&
     form.location.trim()
 
-  const categoryOptions = ["All", "Education", "Employment", "Health", "Sports", "Environment", "Community / Social"]
+  const categoryOptions = useMemo(() => {
+    const fromData = Array.from(new Set(suggestions.map((s) => s.category))).sort((a, b) =>
+      a.localeCompare(b)
+    )
 
-  const handleAddSuggestion = () => {
-    // TODO: Open modal or navigate to add suggestion page
-  }
+    if (fromData.length === 0) {
+      return ["All", "Education", "Employment", "Health", "Sports", "Environment", "Infrastructure", "Community / Social"]
+    }
 
-  const filteredSuggestions = mockSuggestions.filter((s) => {
-    const matchesSearch =
-      search.trim() === "" ||
-      s.title.toLowerCase().includes(search.toLowerCase()) ||
-      s.description.toLowerCase().includes(search.toLowerCase()) ||
-      s.suggestedSolution.toLowerCase().includes(search.toLowerCase()) ||
-      s.location.toLowerCase().includes(search.toLowerCase()) ||
-      s.submittedBy.toLowerCase().includes(search.toLowerCase())
+    return ["All", ...fromData]
+  }, [suggestions])
 
-    const matchesCategory =
-      categoryFilter === "" || categoryFilter === "All" || s.category === categoryFilter
+  const filteredSuggestions = useMemo(() => {
+    const query = search.trim().toLowerCase()
 
-    return matchesSearch && matchesCategory
-  })
+    return suggestions.filter((s) => {
+      const matchesSearch =
+        query === "" ||
+        [s.title, s.description, s.suggestedSolution, s.location, s.category].some((value) =>
+          value.toLowerCase().includes(query)
+        )
+
+      const matchesCategory =
+        categoryFilter === "" || categoryFilter === "All" || s.category === categoryFilter
+
+      return matchesSearch && matchesCategory
+    })
+  }, [suggestions, search, categoryFilter])
 
   return (
     <>
@@ -179,7 +187,7 @@ const Suggestions = () => {
                 </button>
               </DialogTrigger>
 
-              <DialogContent className="sm:max-w-lg">
+              <DialogContent className="sm:max-w-lg p-6">
                 <DialogHeader>
                   <DialogTitle className="text-xl font-bold text-theme-dark-blue">
                     Submit a Suggestion
@@ -209,7 +217,7 @@ const Suggestions = () => {
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categoryOptions.map((option) => (
+                        {categoryOptions.filter((option) => option !== "All").map((option) => (
                           <SelectItem key={option} value={option}>
                             {option}
                           </SelectItem>
@@ -224,7 +232,7 @@ const Suggestions = () => {
                     <Textarea
                       id="description"
                       placeholder="Describe the problem or concern you want to address..."
-                      className="resize-none min-h-[90px]"
+                      className="field-sizing-fixed w-full max-w-full resize-none overflow-x-hidden min-h-22.5 wrap-anywhere"
                       value={form.description}
                       onChange={(e) => set("description", e.target.value)}
                     />
@@ -236,7 +244,7 @@ const Suggestions = () => {
                     <Textarea
                       id="solution"
                       placeholder="What do you think would help solve the problem?"
-                      className="resize-none min-h-[90px]"
+                      className="field-sizing-fixed w-full max-w-full resize-none overflow-x-hidden min-h-22.5 wrap-anywhere"
                       value={form.suggestedSolution}
                       onChange={(e) => set("suggestedSolution", e.target.value)}
                     />
@@ -253,30 +261,23 @@ const Suggestions = () => {
                     />
                   </div>
 
-                  {/* Anonymous checkbox */}
-                  <div className="flex items-center gap-2.5 pt-1">
-                    <Checkbox
-                      id="anonymous"
-                      checked={form.anonymous}
-                      onCheckedChange={(checked) => set("anonymous", !!checked)}
-                    />
-                    <Label htmlFor="anonymous" className="cursor-pointer font-normal text-gray-700">
-                      Submit anonymously
-                    </Label>
-                  </div>
                 </div>
+
+                {submitError ? (
+                  <p className="text-sm text-red-600">{submitError}</p>
+                ) : null}
 
                 {/* Footer actions */}
                 <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-                  <Button variant="outline" onClick={handleCancel}>
+                  <Button variant="outline" onClick={handleCancel} disabled={submitPending}>
                     Cancel
                   </Button>
                   <Button
                     onClick={handleSubmit}
-                    disabled={!isValid}
+                    disabled={!isValid || submitPending}
                     className="bg-theme-dark-blue text-white hover:bg-theme-dark-blue/90"
                   >
-                    Submit Suggestion
+                    {submitPending ? "Submitting..." : "Submit Suggestion"}
                   </Button>
                 </div>
               </DialogContent>
@@ -310,10 +311,18 @@ const Suggestions = () => {
       </div>
 
       <div
-        className="grid gap-4"
+        className="grid items-start gap-4"
         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(420px, 1fr))" }}
       >
-        {filteredSuggestions.length > 0 ? (
+        {loadingSuggestions ? (
+          <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-gray-500 text-sm">Loading suggestions...</p>
+          </div>
+        ) : loadError ? (
+          <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-red-600 text-sm">{loadError}</p>
+          </div>
+        ) : filteredSuggestions.length > 0 ? (
           filteredSuggestions.map((suggestion) => (
             <SuggestionCard key={suggestion.id} suggestion={suggestion} />
           ))

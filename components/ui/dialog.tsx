@@ -13,11 +13,22 @@ function Dialog({
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
 }
 
-function DialogTrigger({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
+type DialogTriggerProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger> & {
+  children: React.ReactNode
 }
+
+const DialogTrigger = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Trigger>,
+  DialogTriggerProps
+>((props, ref) => {
+  const { children, ...rest } = props
+  return (
+    <DialogPrimitive.Trigger ref={ref} data-slot="dialog-trigger" {...rest}>
+      {children}
+    </DialogPrimitive.Trigger>
+  )
+})
+DialogTrigger.displayName = "DialogTrigger"
 
 function DialogPortal({
   ...props

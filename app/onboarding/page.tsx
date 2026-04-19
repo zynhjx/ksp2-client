@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGr
 import { useRouter } from 'next/navigation'
 import Swal from "sweetalert2";
 import Link from 'next/link'
+import { apiFetch } from '@/lib/api'
 const roleRedirectMap: Record<string, string> = {
     admin: "/dashboard",
     sk: "/dashboard",
@@ -135,6 +136,8 @@ const OnboardingPage = () => {
   const [contact, setContact] = useState("");
   const [education, setEducation] = useState("");
   const [employmentStatus, setEmploymentStatus] = useState("");
+  const [password, setPassword] = useState("")
+  const [confPassword, setConfPassword] = useState("")
 
   const router = useRouter()
 
@@ -149,13 +152,14 @@ const OnboardingPage = () => {
       barangay,
       contact,
       education,
-      employmentStatus
+      employmentStatus,
+      password
     };
     
 
     try {
       setSubmitPending(true)
-      const res = await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/onboarding`, {
+      const res = await apiFetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/onboarding`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -177,8 +181,7 @@ const OnboardingPage = () => {
         timer: 1200,
         showConfirmButton: false,
       }).then(() => {
-        const redirectPath = roleRedirectMap[data.user.role] || "/";
-        return router.replace(redirectPath)
+        return router.replace("/home")
       });
 
     } catch (error) {
@@ -226,6 +229,10 @@ const OnboardingPage = () => {
 
       case 2:
         return isValidPHNumber(contact) && barangay.trim() !== "" && education.trim() !== "" && employmentStatus.trim() !== ""
+
+      case 3:
+        return password.trim() !== "" && password === confPassword && password.length >= 8
+
       default:
         return false
     }
@@ -414,6 +421,31 @@ const OnboardingPage = () => {
               </Select>
 
             </motion.div>
+          ): step === 3 ? (
+            <motion.div
+              initial={{x: 10, opacity: 0}}
+              animate={{x: 0, opacity: 1}}
+              exit={{x:-10, opacity: 0}}
+              transition={{ duration: 0.5 }}
+              className='space-y-4'
+            >
+                <FormInput
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type='password'
+                  placeholder='Password'
+                  label='Password'
+                />
+                
+                <FormInput
+                  value={confPassword}
+                  onChange={(e) => setConfPassword(e.target.value)}
+                  type='password'
+                  placeholder='Confirm Password'
+                  label='Confirm Password'
+                />
+
+            </motion.div>
           ): null}
           
 
@@ -428,8 +460,8 @@ const OnboardingPage = () => {
 
             <Button 
               className='flex-2'
-              primary type={step !== 2 ? 'button' : 'submit'} disabled={!isFormValid() || (step === 2 && submitPending)} onClick={step !== 2 ? handleNext : undefined}>
-                {step !== 2 ? "Next" : "Submit"}
+              primary type={step !== 3 ? 'button' : 'submit'} disabled={!isFormValid() || (step === 3 && submitPending)} onClick={step !== 3 ? handleNext : undefined}>
+                {step !== 3 ? "Next" : "Submit"}
               </Button>
           </div>
         </form>

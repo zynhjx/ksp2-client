@@ -1,5 +1,6 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
+import { Input } from "@/components/ui/input";
 
 type InputProps = {
   value: string,
@@ -26,7 +27,7 @@ const FormInput = ({value, label, onChange, type, pattern, inputMode, name, clas
         )}>{label}</label>
       )}
       
-      <input
+      <Input
         type={type}
         inputMode={inputMode}
         name={name}
@@ -35,7 +36,7 @@ const FormInput = ({value, label, onChange, type, pattern, inputMode, name, clas
         maxLength={maxLength}
         onChange={onChange}
         placeholder={placeholder}
-        className={twMerge("w-full px-4 h-12 rounded-l border border-gray-200 focus:border-theme-blue  outline-none transition",
+        className={twMerge("w-full px-4 h-12 border border-gray-200 focus:border-theme-blue  outline-none transition",
           error && "border-red-600 text-red-600",
           success && "border-green-600 text-green-600",
           className
