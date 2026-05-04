@@ -6,6 +6,7 @@ import Overlay from "@/components/Overlay";
 import { AuthProvider } from "@/context/AuthContext";
 import { cookies } from "next/headers";
 import { apiFetch } from "@/lib/api";
+import DeactivationGuard from "@/components/DeactivationGuard";
 
 
 type User = {
@@ -58,6 +59,7 @@ const Layout = async ({children}: {children: ReactNode} ) => {
         <SidebarProvider>
           <Sidebar/>
           <main className="mt-20 md:pt-6 md:mt-0 md:ml-18 xl:ml-0 bg-theme-white flex-1 p-8 overflow-y-scroll">
+            <DeactivationGuard />
             <Overlay/>
             <MobileHeader/>
             {children}

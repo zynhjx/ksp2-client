@@ -3,14 +3,15 @@
 import CardTitle from '@/components/auth/CardTitle'
 import { motion } from 'framer-motion'
 import FormInput from '@/components/auth/form/FormInput'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Button from '@/components/Button'
 import { twMerge } from 'tailwind-merge'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
-import Swal from "sweetalert2";
 import Link from 'next/link'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Button as ShadButton } from '@/components/ui/button'
 import { apiFetch } from '@/lib/api'
 const roleRedirectMap: Record<string, string> = {
     admin: "/dashboard",
@@ -93,11 +94,7 @@ const genders = [
   "Others"
 ]
 
-const barangays = [
-  "Barangay Bagong Sikat",
-  "Barangay Maunlad",
-  "Barangay Bagong Silang"
-]
+
 
 const educationLevels = [
   "No Formal Education",
@@ -126,6 +123,20 @@ const employmentStatuses = [
 const OnboardingPage = () => {
   const [step, setStep] = useState(1)
   const [submitPending, setSubmitPending] = useState(false)
+  const [pendingDialogOpen, setPendingDialogOpen] = useState(false)
+  const [barangays, setBarangays] = useState<string[]>([])
+  const [barangaysLoading, setBarangaysLoading] = useState(true)
+
+  useEffect(() => {
+    apiFetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/youth/barangays`)
+      .then((res) => res.json())
+      .then((json) => {
+        const names: string[] = (json.data ?? []).map((b: { id: number; name: string }) => b.name)
+        setBarangays(names)
+      })
+      .catch(() => toast.error("Failed to load barangay options. Please refresh."))
+      .finally(() => setBarangaysLoading(false))
+  }, [])
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [month, setMonth] = useState("");
@@ -170,26 +181,15 @@ const OnboardingPage = () => {
 
       const data = await res.json();
 
-      if (!res.ok) {  
-        throw new Error(data.message || "Something went wrong");
+      if (!res.ok) {
+        toast.error(data.message || "Something went wrong. Please try again.")
+        return
       }
 
-      const result = await Swal.fire({
-        title: "Registration Submitted",
-        text: "Please wait for the SK official to approve your registration. Click Yes to continue to login.",
-        icon: "info",
-        confirmButtonText: "Yes",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      });
+      setPendingDialogOpen(true);
 
-      if (result.isConfirmed) {
-        router.replace("/auth/login");
-      }
-
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("Failed to submit your information. Please try again.");
+    } catch {
+      toast.error("Unable to connect. Please check your connection and try again.");
     } finally {
       setSubmitPending(false)
     }
@@ -241,7 +241,26 @@ const OnboardingPage = () => {
     }
   }
 
+  const handleDialogAcknowledge = () => {
+    setPendingDialogOpen(false)
+    router.replace("/auth/login")
+  }
+
   return (
+    <>
+    <Dialog open={pendingDialogOpen} onOpenChange={() => {}}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Registration Submitted</DialogTitle>
+          <DialogDescription>
+            Please wait for the SK official to approve your registration before you can log in.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <ShadButton onClick={handleDialogAcknowledge}>OK</ShadButton>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     <div className="min-h-screen bg-theme-white md:bg-gray-50 flex flex-col items-center md:justify-center md:p-6 text-gray-900">
       <div className="w-full mt-8 md:mt-0 max-w-full md:max-w-xl bg-theme-white md:rounded-3xl md:shadow-xl md:shadow-theme-blue/40 md:border border-gray-100 overflow-hidden p-8 md:p-12">
         <CardTitle title='Welcome Aboard' subtitle='Let’s get you set up in just a few steps.'/>
@@ -376,9 +395,9 @@ const OnboardingPage = () => {
                   onChange={(e) => setContact(e.target.value.replace(/\D/g, ""))}/>
 
               <label className="text-sm font-semibold text-gray-700">Barangay</label>
-              <Select value={barangay} onValueChange={setBarangay}>
+              <Select value={barangay} onValueChange={setBarangay} disabled={barangaysLoading}>
                 <SelectTrigger className='text-base w-full min-h-12 flex-1 px-4 rounded border border-gray-200 focus:border-theme-blue focus:ring-0 outline-none transition'>
-                  <SelectValue placeholder="Select Barangay"/>
+                  <SelectValue placeholder={barangaysLoading ? "Loading..." : "Select Barangay"}/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -471,6 +490,7 @@ const OnboardingPage = () => {
 
       </div>
     </div>
+    </>
   )
 }
 

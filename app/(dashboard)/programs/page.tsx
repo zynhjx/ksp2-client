@@ -79,11 +79,6 @@ const Programs = () => {
           return
         }
 
-        if (result.status === 403 && result.reason === "account_suspended") {
-          router.replace("/403?reason=account_suspended")
-          return
-        }
-
         setPrograms([])
         setLoadError(result.message)
         setLoadingPrograms(false)

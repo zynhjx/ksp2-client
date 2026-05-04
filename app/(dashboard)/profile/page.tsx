@@ -72,11 +72,6 @@ const ProfilePage = () => {
           return
         }
 
-        if (result.status === 403 && result.reason === "account_suspended") {
-          router.replace("/403?reason=account_suspended")
-          return
-        }
-
         setProfileError(result.message)
         setIsLoadingProfile(false)
         return
@@ -175,11 +170,7 @@ const ProfilePage = () => {
         return
       }
 
-      if (result.status === 403 && result.reason === "account_suspended") {
-        setIsSaving(false)
-        router.replace("/403?reason=account_suspended")
-        return
-      }
+
 
       setSaveError(result.message)
       setIsSaving(false)

@@ -54,11 +54,6 @@ const Home = () => {
           return
         }
 
-        if (result.status === 403 && result.reason === "account_suspended") {
-          router.replace("/403?reason=account_suspended")
-          return
-        }
-
         setPrograms([])
         setProgramsError(result.message)
         setProgramsLoading(false)
@@ -87,11 +82,6 @@ const Home = () => {
       if (!result.ok) {
         if (result.status === 403 && result.reason === "pending_activation") {
           router.replace("/activation-pending")
-          return
-        }
-
-        if (result.status === 403 && result.reason === "account_suspended") {
-          router.replace("/403?reason=account_suspended")
           return
         }
 

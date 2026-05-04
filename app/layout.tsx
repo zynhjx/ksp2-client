@@ -9,7 +9,7 @@ import PublicFooter from "@/components/PublicFooter";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "KSK - Youth",
+  title: "KSP - Youth",
   icons: {
     icon: "/LogoIconDark.svg"
   },
@@ -31,7 +31,7 @@ export default function RootLayout({
           {children}
           <PublicFooter />
         </TooltipProvider>
-        <Toaster />
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

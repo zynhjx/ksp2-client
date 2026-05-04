@@ -24,7 +24,7 @@ const LoginPage = () => {
     e.preventDefault()
     setSending(true)
     try {
-      const result = await apiFetch(`${apiUrl}/api/auth/login`, {
+      const result = await apiFetch(`${apiUrl}/api/auth/local/login`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -36,14 +36,23 @@ const LoginPage = () => {
       const data = await result.json()
       
       if (!result.ok) {
-        return toast.error(data.message, {position: "top-center", description: data.hint })
+        const msg: string = data.message ?? "Something went wrong. Please try again."
+
+        if (data.reason === "pending_activation") {
+          toast.error(msg)
+          router.push("/activation-pending")
+          return
+        }
+
+        toast.error(msg)
+        return
       }
       
-      toast.success(data.message, { position: "top-center" })
+      toast.success("Logged in successfully.")
       return router.push("/home")
 
-    } catch (err) {
-      console.log(err)
+    } catch {
+      toast.error("Unable to connect. Please check your connection and try again.")
     } finally {
       setSending(false)
     }
