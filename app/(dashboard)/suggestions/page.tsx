@@ -3,13 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import SuggestionCard from "@/components/SuggestionCard"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import EmptyState from "@/components/EmptyState"
 import {
   Dialog,
   DialogContent,
@@ -30,7 +24,6 @@ import {
 
 const EMPTY_FORM = {
   title: "",
-  category: "",
   description: "",
   suggestedSolution: "",
   location: "",
@@ -44,7 +37,6 @@ const Suggestions = () => {
   const [loadingSuggestions, setLoadingSuggestions] = useState(true)
   const [loadError, setLoadError] = useState("")
   const [search, setSearch] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("")
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
   const [submitPending, setSubmitPending] = useState(false)
@@ -92,7 +84,6 @@ const Suggestions = () => {
 
     const result = await createYouthSuggestion(apiBase, {
       title: form.title.trim(),
-      category: form.category.trim(),
       description: form.description.trim(),
       suggestedSolution: form.suggestedSolution.trim(),
       location: form.location.trim(),
@@ -131,39 +122,22 @@ const Suggestions = () => {
 
   const isValid =
     form.title.trim() &&
-    form.category &&
     form.description.trim() &&
     form.suggestedSolution.trim() &&
     form.location.trim()
-
-  const categoryOptions = useMemo(() => {
-    const fromData = Array.from(new Set(suggestions.map((s) => s.category))).sort((a, b) =>
-      a.localeCompare(b)
-    )
-
-    if (fromData.length === 0) {
-      return ["All", "Education", "Employment", "Health", "Sports", "Environment", "Infrastructure", "Community / Social"]
-    }
-
-    return ["All", ...fromData]
-  }, [suggestions])
 
   const filteredSuggestions = useMemo(() => {
     const query = search.trim().toLowerCase()
 
     return suggestions.filter((s) => {
-      const matchesSearch =
+      return (
         query === "" ||
-        [s.title, s.description, s.suggestedSolution, s.location, s.category].some((value) =>
+        [s.title, s.description, s.suggestedSolution, s.location].some((value) =>
           value.toLowerCase().includes(query)
         )
-
-      const matchesCategory =
-        categoryFilter === "" || categoryFilter === "All" || s.category === categoryFilter
-
-      return matchesSearch && matchesCategory
+      )
     })
-  }, [suggestions, search, categoryFilter])
+  }, [suggestions, search])
 
   return (
     <>
@@ -201,25 +175,13 @@ const Suggestions = () => {
                       placeholder="e.g. Free Medical Checkup for Seniors"
                       value={form.title}
                       onChange={(e) => set("title", e.target.value)}
+                      maxLength={150}
                     />
+                    <p className="text-xs text-gray-400 text-right">{form.title.length}/150</p>
                   </div>
 
                   {/* Category */}
-                  <div className="flex flex-col gap-1.5">
-                    <Label>Category <span className="text-red-500">*</span></Label>
-                    <Select value={form.category} onValueChange={(val) => set("category", val)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categoryOptions.filter((option) => option !== "All").map((option) => (
-                          <SelectItem key={option} value={option}>
-                            {option}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* removed */}
 
                   {/* Description */}
                   <div className="flex flex-col gap-1.5">
@@ -289,19 +251,6 @@ const Suggestions = () => {
             className="bg-white flex-1 px-4 py-3 rounded-sm focus:outline-0 border border-gray-200"
             placeholder="Search suggestions..."
           />
-
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-40 h-12.5! bg-white! border border-gray-200 rounded-sm px-4">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categoryOptions.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
@@ -310,22 +259,17 @@ const Suggestions = () => {
         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(420px, 1fr))" }}
       >
         {loadingSuggestions ? (
-          <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-gray-500 text-sm">Loading suggestions...</p>
-          </div>
+          <EmptyState loading loadingMessage="Loading suggestions..." colSpan />
         ) : loadError ? (
-          <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-red-600 text-sm">{loadError}</p>
+          <div className="col-span-full rounded-2xl border border-dashed border-red-300 bg-theme-card-white p-8 text-center text-red-600">
+            {loadError}
           </div>
         ) : filteredSuggestions.length > 0 ? (
           filteredSuggestions.map((suggestion) => (
             <SuggestionCard key={suggestion.id} suggestion={suggestion} />
           ))
         ) : (
-          <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-gray-400 text-sm">No suggestions found.</p>
-            <p className="text-gray-300 text-xs mt-1">Try adjusting your search or filter.</p>
-          </div>
+          <EmptyState message="No suggestions found." colSpan />
         )}
       </div>
     </>

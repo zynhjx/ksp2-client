@@ -22,13 +22,15 @@ const ListContainer = ({
     )}>
       <div className="flex items-center justify-between gap-4 mb-4">
         <h2 className="text-lg font-semibold text-theme-blue">{title}</h2>
-        <button
-          type="button"
-          onClick={onViewAll}
-          className="text-sm font-medium text-theme-blue hover:underline hover:cursor-pointer"
-        >
-          {viewAllLabel}
-        </button>
+        {onViewAll && (
+          <button
+            type="button"
+            onClick={onViewAll}
+            className="text-sm font-medium text-theme-blue hover:underline hover:cursor-pointer"
+          >
+            {viewAllLabel}
+          </button>
+        )}
       </div>
       {children}
     </section>

@@ -6,7 +6,6 @@ export type YouthSuggestion = {
   description: string
   suggestedSolution: string
   location: string
-  category: string
   createdAt: string
 }
 
@@ -16,7 +15,6 @@ type YouthSuggestionApiRecord = {
   description?: string
   suggested_solution?: string
   location?: string
-  category?: string
   created_at?: string
 }
 
@@ -41,7 +39,6 @@ type CreateSuggestionInput = {
   description: string
   suggestedSolution: string
   location: string
-  category: string
 }
 
 const normalizeSuggestion = (record: YouthSuggestionApiRecord): YouthSuggestion => ({
@@ -50,7 +47,6 @@ const normalizeSuggestion = (record: YouthSuggestionApiRecord): YouthSuggestion 
   description: String(record.description ?? "No description provided."),
   suggestedSolution: String(record.suggested_solution ?? "No suggested solution provided."),
   location: String(record.location ?? "TBA"),
-  category: String(record.category ?? "General"),
   createdAt: String(record.created_at ?? new Date().toISOString()),
 })
 
@@ -125,7 +121,6 @@ export async function createYouthSuggestion(
         description: payload.description,
         suggested_solution: payload.suggestedSolution,
         location: payload.location,
-        category: payload.category,
       }),
     })
 

@@ -46,6 +46,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import ProfileDialog from "@/components/ProfileDialog"
 
 const toTitleCase = (str: string = "") => {
   return str
@@ -71,6 +72,7 @@ const Sidebar = () => {
     if (typeof window === "undefined") return false;
     return window.matchMedia("(max-width: 1280px)").matches;
   });
+  const [profileOpen, setProfileOpen] = useState(false)
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 1280px)");
@@ -220,9 +222,10 @@ const Sidebar = () => {
               </DropdownMenuLabel>
               <DropdownMenuItem
                 className="p-2"
-                onSelect={() => {
-                  router.push("/profile")
+                onSelect={(e) => {
+                  e.preventDefault()
                   if (isMobile) closeSidebar()
+                  setProfileOpen(true)
                 }}
               >
                 <CircleUser /> Profile
@@ -264,6 +267,7 @@ const Sidebar = () => {
         </DropdownMenu>
       </footer>
 
+      <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
     </aside>
   )
 }

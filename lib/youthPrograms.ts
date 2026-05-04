@@ -9,6 +9,7 @@ export type YouthProgram = {
   category: string
   location: string
   createdAt: string
+  updatedAt?: string
   startDate: string
   untilDate: string
   status: ProgramStatus
@@ -24,6 +25,7 @@ type YouthProgramApiRecord = {
   start_date?: string
   end_date?: string
   created_at?: string
+  updated_at?: string
 }
 
 type ApiResult = {
@@ -35,12 +37,12 @@ type ApiResult = {
 }
 
 const toStartOfDay = (value: string) => {
-  const date = new Date(`${value}T00:00:00`)
+  const date = new Date(`${value.slice(0, 10)}T00:00:00`)
   return Number.isNaN(date.getTime()) ? null : date
 }
 
 const toEndOfDay = (value: string) => {
-  const date = new Date(`${value}T23:59:59.999`)
+  const date = new Date(`${value.slice(0, 10)}T23:59:59.999`)
   return Number.isNaN(date.getTime()) ? null : date
 }
 
@@ -66,6 +68,7 @@ const normalizeProgram = (record: YouthProgramApiRecord): YouthProgram => {
     category: String(record.category ?? "General"),
     location: String(record.location ?? "TBA"),
     createdAt: String(record.created_at ?? new Date().toISOString()),
+    updatedAt: record.updated_at ? String(record.updated_at) : undefined,
     startDate,
     untilDate: endDate,
     status: deriveStatus(startDate, endDate),

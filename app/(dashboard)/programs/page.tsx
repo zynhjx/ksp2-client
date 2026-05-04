@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import ProgramCard from "@/components/ProgramCard"
+import EmptyState from "@/components/EmptyState"
 import {
   Select,
   SelectContent,
@@ -168,17 +169,13 @@ const Programs = () => {
       </div>
 
       {loadingPrograms ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-theme-card-white p-8 text-center text-gray-500">
-          Loading programs...
-        </div>
+        <EmptyState loading loadingMessage="Loading programs..." />
       ) : loadError ? (
         <div className="rounded-2xl border border-dashed border-red-300 bg-theme-card-white p-8 text-center text-red-600">
           {loadError}
         </div>
       ) : filteredPrograms.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-theme-card-white p-8 text-center text-gray-500">
-          No programs match your search or filters.
-        </div>
+        <EmptyState message="No programs match your search or filters." />
       ) : (
         <div
           className="grid gap-4"

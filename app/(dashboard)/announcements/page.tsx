@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import AnnouncementCard from "@/components/AnnouncementCard"
+import EmptyState from "@/components/EmptyState"
 import {
   fetchYouthAnnouncements,
   type YouthAnnouncement,
@@ -90,7 +91,7 @@ const Announcements = () => {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             value={search}
@@ -101,7 +102,7 @@ const Announcements = () => {
 
           <div className="flex gap-2">
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-48 h-12.5! bg-white! border border-gray-200 rounded-sm px-4">
+              <SelectTrigger className="min-w-36 w-auto sm:w-48 h-12.5! bg-white! border border-gray-200 rounded-sm px-4">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -117,17 +118,13 @@ const Announcements = () => {
       </div>
 
       {loadingAnnouncements ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-theme-card-white p-8 text-center text-gray-500">
-          Loading announcements...
-        </div>
+        <EmptyState loading loadingMessage="Loading announcements..." />
       ) : loadError ? (
         <div className="rounded-2xl border border-dashed border-red-300 bg-theme-card-white p-8 text-center text-red-600">
           {loadError}
         </div>
       ) : filteredAnnouncements.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-theme-card-white p-8 text-center text-gray-500">
-          No announcements match your search or filters.
-        </div>
+        <EmptyState message="No announcements match your search or filters." />
       ) : (
         <div className="flex flex-col gap-4">
           {filteredAnnouncements.map((announcement) => (

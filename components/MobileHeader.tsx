@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from "react"
 import { useAuth } from "@/context/AuthContext"
 import { useSidebar } from "@/context/SidebarContext"
 import {
@@ -23,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CircleUser, LogOutIcon, Menu } from "lucide-react"
+import ProfileDialog from "@/components/ProfileDialog"
 import { useRouter } from "next/navigation"
 import { twMerge } from "tailwind-merge"
 
@@ -40,6 +42,7 @@ const MobileHeader = () => {
   const { user, setUser } = useAuth()
   const router = useRouter()
   const userInitial = user?.first_name?.charAt(0)?.toUpperCase() || "Y"
+  const [profileOpen, setProfileOpen] = useState(false)
 
   const handleLogout = async () => {
     try {
@@ -59,6 +62,7 @@ const MobileHeader = () => {
   }
 
   return (
+    <>
     <div className="md:hidden fixed bg-theme-dark-blue top-0 right-0 left-0 h-18.75 px-4 flex items-center z-20">
       <div className="flex items-center w-18 justify-center">
         <button onClick={() => toggleSidebar()}
@@ -100,7 +104,10 @@ const MobileHeader = () => {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem
-                onSelect={() => router.push("/profile")}
+                onSelect={(e) => {
+                  e.preventDefault()
+                  setProfileOpen(true)
+                }}
               >
                 <CircleUser /> Profile
               </DropdownMenuItem>
@@ -141,6 +148,8 @@ const MobileHeader = () => {
         </DropdownMenu>
       </div>
     </div>
+      <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
+    </>
   )
 }
 
