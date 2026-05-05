@@ -26,7 +26,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={cn("h-full", "antialiased", "font-sans", geist.variable, "scroll-smooth")}
     >
-      <body className="min-h-full min-w-full flex flex-col bg-white">
+      <body className="min-h-full min-w-full flex flex-col bg-white relative">
         <TooltipProvider>
           {children}
           <PublicFooter />

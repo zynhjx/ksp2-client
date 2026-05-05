@@ -101,21 +101,29 @@ const Programs = () => {
   const filteredPrograms = useMemo(() => {
     const query = search.trim().toLowerCase()
 
-    return programs.filter((program) => {
-      const matchesSearch =
-        !query ||
-        [program.name, program.description, program.category, program.location].some((value) =>
-          value.toLowerCase().includes(query)
-        )
+    const statusOrder: Record<string, number> = { ongoing: 0, upcoming: 1 }
 
-      const matchesStatus =
-        statusFilter === "All" || program.status.toLowerCase() === statusFilter.toLowerCase()
+    return programs
+      .filter((program) => {
+        const matchesSearch =
+          !query ||
+          [program.name, program.description, program.category, program.location].some((value) =>
+            value.toLowerCase().includes(query)
+          )
 
-      const matchesCategory =
-        categoryFilter === "All" || program.category.toLowerCase() === categoryFilter.toLowerCase()
+        const matchesStatus =
+          statusFilter === "All" || program.status.toLowerCase() === statusFilter.toLowerCase()
 
-      return matchesSearch && matchesStatus && matchesCategory
-    })
+        const matchesCategory =
+          categoryFilter === "All" || program.category.toLowerCase() === categoryFilter.toLowerCase()
+
+        return matchesSearch && matchesStatus && matchesCategory
+      })
+      .sort((a, b) => {
+        const aOrder = statusOrder[a.status.toLowerCase()] ?? 2
+        const bOrder = statusOrder[b.status.toLowerCase()] ?? 2
+        return aOrder - bOrder
+      })
   }, [programs, search, statusFilter, categoryFilter])
 
 
@@ -178,7 +186,7 @@ const Programs = () => {
         <EmptyState message="No programs match your search or filters." />
       ) : (
         <div
-          className="grid gap-4"
+          className="grid gap-4 items-start"
           style={{ gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))" }}
         >
           {filteredPrograms.map((program) => (

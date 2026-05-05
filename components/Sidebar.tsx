@@ -20,6 +20,7 @@ import { twMerge } from 'tailwind-merge';
 import { useSidebar } from "@/context/SidebarContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 import { useState, useEffect } from "react";
 import {
   Tooltip,
@@ -87,12 +88,9 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/logout`, {
+      await apiFetch(`${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/api/auth/logout`, {
         method: "POST",
-        credentials: "include", // include cookies if using session/cookie auth
-        headers: {
-          "x-app-type": "youth"
-        }
+        credentials: "include",
       });
     } catch (error) {
       console.error("Logout failed:", error);

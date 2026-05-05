@@ -13,7 +13,6 @@ export type YouthProgram = {
   startDate: string
   untilDate: string
   status: ProgramStatus
-  participants: number
 }
 
 type YouthProgramApiRecord = {
@@ -72,7 +71,6 @@ const normalizeProgram = (record: YouthProgramApiRecord): YouthProgram => {
     startDate,
     untilDate: endDate,
     status: deriveStatus(startDate, endDate),
-    participants: 0,
   }
 }
 

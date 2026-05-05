@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import { MapPin } from "lucide-react"
+import { MapPin, Clock } from "lucide-react"
 
 type SuggestionCardProps = {
   suggestion?: {
@@ -18,6 +18,7 @@ type SuggestionCardProps = {
     description: string
     suggestedSolution: string
     location: string
+    createdAt?: string
   }
   canModify?: boolean
   onApprove?: (id: string) => void
@@ -33,6 +34,7 @@ const mockSuggestion = {
   suggestedSolution:
     "Install LED street lights on major streets and pathways. Consider solar-powered options for cost efficiency and sustainability.",
   location: "Main Street, Various Areas",
+  createdAt: new Date().toISOString(),
 }
 
 
@@ -66,6 +68,17 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
             {current.suggestedSolution}
           </p>
         </div>
+        {current.createdAt && (
+          <div className="flex flex-col gap-1">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+              Submitted
+            </span>
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Clock size={12} strokeWidth={2} className="text-gray-400 shrink-0" />
+              <span>{new Date(current.createdAt).toLocaleString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", hour12: true })}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Divider */}
@@ -90,10 +103,10 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
         {CardContent}
       </article>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg p-0 overflow-hidden gap-0">
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden gap-0" aria-describedby={undefined}>
           <div className="px-6 pt-6 pb-2">
             <DialogHeader>
-              <DialogTitle className="text-base font-semibold text-gray-900 leading-snug wrap-anywhere line-clamp-3 max-w-[calc(100%-2.5rem)]">
+              <DialogTitle className="text-base font-semibold text-gray-900 leading-snug wrap-anywhere max-w-[calc(100%-2.5rem)]">
                 {current.title}
               </DialogTitle>
             </DialogHeader>
@@ -116,6 +129,17 @@ const SuggestionCard = ({ suggestion }: SuggestionCardProps) => {
                 {current.suggestedSolution}
               </p>
             </div>
+            {current.createdAt && (
+              <div className="flex flex-col gap-1">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                  Submitted
+                </span>
+                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                  <Clock size={12} strokeWidth={2} className="text-gray-400 shrink-0" />
+                  <span>{new Date(current.createdAt).toLocaleString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", hour12: true })}</span>
+                </div>
+              </div>
+            )}
           </div>
           {/* Divider */}
           <hr className="border-gray-100 mx-6" />

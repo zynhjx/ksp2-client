@@ -18,7 +18,6 @@ type Program = {
   description: string
   createdAt: string
   updatedAt?: string
-  participants: number
   startDate: string
   untilDate: string
 }
@@ -67,22 +66,52 @@ const ProgramCard = ({ program }: ProgramCardProps) => {
 
   const getCategoryColor = (category: string) => {
     const map: Record<string, string> = {
-      health: "bg-rose-50 text-rose-700 border-rose-200",
-      education: "bg-violet-50 text-violet-700 border-violet-200",
-      livelihood: "bg-amber-50 text-amber-700 border-amber-200",
-      environment: "bg-teal-50 text-teal-700 border-teal-200",
-      infrastructure: "bg-sky-50 text-sky-700 border-sky-200",
+      health:         "bg-red-50 text-red-700 border-red-200",
+      education:      "bg-blue-50 text-blue-700 border-blue-200",
+      livelihood:     "bg-amber-50 text-amber-700 border-amber-200",
+      environment:    "bg-green-50 text-green-700 border-green-200",
+      community:      "bg-teal-50 text-teal-700 border-teal-200",
+      youth:          "bg-pink-50 text-pink-700 border-pink-200",
+      sports:         "bg-orange-50 text-orange-700 border-orange-200",
+      technology:     "bg-indigo-50 text-indigo-700 border-indigo-200",
+      culture:        "bg-violet-50 text-violet-700 border-violet-200",
+      safety:         "bg-rose-50 text-rose-700 border-rose-200",
+      welfare:        "bg-cyan-50 text-cyan-700 border-cyan-200",
+      employment:     "bg-yellow-50 text-yellow-700 border-yellow-200",
+      agriculture:    "bg-lime-50 text-lime-700 border-lime-200",
+      innovation:     "bg-purple-50 text-purple-700 border-purple-200",
+      infrastructure: "bg-stone-50 text-stone-700 border-stone-200",
+      outreach:       "bg-sky-50 text-sky-700 border-sky-200",
+      disaster:       "bg-red-50 text-red-800 border-red-300",
+      nutrition:      "bg-emerald-50 text-emerald-700 border-emerald-200",
+      tourism:        "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+      governance:     "bg-slate-50 text-slate-700 border-slate-200",
     }
     return map[category.toLowerCase()] ?? "bg-gray-100 text-gray-600 border-gray-200"
   }
 
   const getCategoryTextColor = (category: string) => {
     const map: Record<string, string> = {
-      health: "text-rose-700",
-      education: "text-violet-700",
-      livelihood: "text-amber-700",
-      environment: "text-teal-700",
-      infrastructure: "text-sky-700",
+      health:         "text-red-700",
+      education:      "text-blue-700",
+      livelihood:     "text-amber-700",
+      environment:    "text-green-700",
+      community:      "text-teal-700",
+      youth:          "text-pink-700",
+      sports:         "text-orange-700",
+      technology:     "text-indigo-700",
+      culture:        "text-violet-700",
+      safety:         "text-rose-700",
+      welfare:        "text-cyan-700",
+      employment:     "text-yellow-700",
+      agriculture:    "text-lime-700",
+      innovation:     "text-purple-700",
+      infrastructure: "text-stone-700",
+      outreach:       "text-sky-700",
+      disaster:       "text-red-800",
+      nutrition:      "text-emerald-700",
+      tourism:        "text-fuchsia-700",
+      governance:     "text-slate-700",
     }
     return map[category.toLowerCase()] ?? "text-gray-700"
   }
@@ -129,10 +158,10 @@ const ProgramCard = ({ program }: ProgramCardProps) => {
               value={program.category}
               valueClassName={`text-sm font-semibold leading-snug ${getCategoryTextColor(program.category)}`}
             />
-            <MetaItem label="Created" value={formatDate(program.createdAt)} />
+            <MetaItem label="Created" value={formatDateTime(program.createdAt)} />
             <MetaItem
               label="Last Modified"
-              value={program.updatedAt ? formatDate(program.updatedAt) : "—"}
+              value={program.updatedAt ? formatDateTime(program.updatedAt) : "—"}
             />
             <MetaItem label="Start" value={formatDateTime(program.startDate)} />
             <MetaItem label="Until" value={formatDateTime(program.untilDate)} />
@@ -148,7 +177,7 @@ const ProgramCard = ({ program }: ProgramCardProps) => {
 
       {/* Detail Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg p-0 overflow-hidden gap-0">
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden gap-0" aria-describedby={undefined}>
           <div className="flex flex-col gap-3 p-5">
             {/* Title */}
             <DialogHeader>
@@ -179,10 +208,10 @@ const ProgramCard = ({ program }: ProgramCardProps) => {
                 value={program.category}
                 valueClassName={`text-sm font-semibold leading-snug ${getCategoryTextColor(program.category)}`}
               />
-              <MetaItem label="Created" value={formatDate(program.createdAt)} />
+              <MetaItem label="Created" value={formatDateTime(program.createdAt)} />
               <MetaItem
                 label="Last Modified"
-                value={program.updatedAt ? formatDate(program.updatedAt) : "—"}
+                value={program.updatedAt ? formatDateTime(program.updatedAt) : "—"}
               />
               <MetaItem label="Start" value={formatDateTime(program.startDate)} />
               <MetaItem label="Until" value={formatDateTime(program.untilDate)} />

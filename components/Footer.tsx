@@ -9,10 +9,10 @@ const Footer = () => {
           &copy; {new Date().getFullYear()} Kabataan Statistical Profile. All rights reserved.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-medium text-gray-600 md:justify-end">
-          <Link href="/terms" className="transition hover:text-theme-dark-blue">
+          <Link href="/terms" target="_blank" rel="noopener noreferrer" className="transition hover:text-theme-dark-blue">
             Terms
           </Link>
-          <Link href="/privacy-policy" className="transition hover:text-theme-dark-blue">
+          <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="transition hover:text-theme-dark-blue">
             Privacy Policy
           </Link>
           <a href="mailto:support@kabataanprofile.com" className="transition hover:text-theme-dark-blue">

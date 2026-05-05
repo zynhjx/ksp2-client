@@ -7,6 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { AlertTriangle, Bell, CalendarDays, Megaphone, Sparkles } from "lucide-react"
+import { announcementIconBg, announcementIconColor, announcementBadge } from "@/lib/utils"
 
 type Announcement = {
   id: string
@@ -19,6 +21,15 @@ type Announcement = {
 
 type AnnouncementCardProps = {
   announcement: Announcement
+}
+
+const announcementIcon: Record<string, React.ReactNode> = {
+  general:     <Megaphone size={22} />,
+  urgent:      <AlertTriangle size={22} />,
+  event:       <CalendarDays size={22} />,
+  reminder:    <Bell size={22} />,
+  opportunity: <Sparkles size={22} />,
+  default:     <Megaphone size={22} />,
 }
 
 const AnnouncementCard = ({ announcement }: AnnouncementCardProps) => {
@@ -34,30 +45,19 @@ const AnnouncementCard = ({ announcement }: AnnouncementCardProps) => {
       hour12: true,
     })
 
-  const getTypeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "general":
-        return "bg-blue-50 text-blue-700 border-blue-200"
-      case "event":
-        return "bg-green-50 text-green-700 border-green-200"
-      case "urgent":
-        return "bg-red-50 text-red-700 border-red-200"
-      case "reminder":
-        return "bg-amber-50 text-amber-700 border-amber-200"
-      case "opportunity":
-        return "bg-purple-50 text-purple-700 border-purple-200"
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-200"
-    }
-  }
+  const type = announcement.type
+  const iconBg = announcementIconBg[type] ?? announcementIconBg.default
+  const iconColor = announcementIconColor[type] ?? announcementIconColor.default
+  const badgeClass = announcementBadge[type] ?? announcementBadge.default
+  const icon = announcementIcon[type] ?? announcementIcon.default
 
-  const getTypeTextColor = (type: string) => {
-    switch (type.toLowerCase()) {
+  const getTypeTextColor = (t: string) => {
+    switch (t.toLowerCase()) {
       case "general":     return "text-blue-700"
-      case "event":       return "text-green-700"
+      case "event":       return "text-purple-700"
       case "urgent":      return "text-red-700"
       case "reminder":    return "text-amber-700"
-      case "opportunity": return "text-purple-700"
+      case "opportunity": return "text-emerald-700"
       default:            return "text-gray-700"
     }
   }
@@ -69,22 +69,29 @@ const AnnouncementCard = ({ announcement }: AnnouncementCardProps) => {
         className="group relative overflow-hidden rounded-3xl border border-gray-200 bg-theme-card-white shadow-sm transition-all duration-180 hover:shadow-md hover:border-gray-300 cursor-pointer"
       >
         <div className="flex flex-col gap-5 p-5">
-          {/* Title row — badge stays inline with the title only */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-start justify-between gap-3">
-              <h2 className="text-base font-semibold text-gray-900 leading-snug">
-                {announcement.title}
-              </h2>
-              <span
-                className={`inline-flex shrink-0 rounded-2xl border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${getTypeColor(announcement.type)}`}
-              >
-                {announcement.type}
-              </span>
+          {/* Title row with icon */}
+          <div className="flex items-start gap-4">
+            <div
+              className={`shrink-0 flex h-11 w-11 items-center justify-center rounded-full border ${iconBg} ${iconColor}`}
+            >
+              {icon}
             </div>
-            {/* Description spans full width */}
-            <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 wrap-break-word">
-              {announcement.content}
-            </p>
+            <div className="flex flex-col gap-3 flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="text-base font-semibold text-gray-900 leading-snug">
+                  {announcement.title}
+                </h2>
+                <span
+                  className={`inline-flex shrink-0 rounded-2xl border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${badgeClass}`}
+                >
+                  {announcement.type}
+                </span>
+              </div>
+              {/* Description spans full width */}
+              <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 wrap-break-word">
+                {announcement.content}
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2 border-t border-gray-100 pt-4 text-sm text-gray-500 sm:flex-row sm:items-center sm:justify-between">
@@ -100,7 +107,7 @@ const AnnouncementCard = ({ announcement }: AnnouncementCardProps) => {
 
       {/* Detail Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg p-0 overflow-hidden gap-0">
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden gap-0" aria-describedby={undefined}>
           {/* Title area */}
           <div className="px-6 pt-6 pb-2">
             <DialogHeader>

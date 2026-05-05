@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CircleUser, LogOutIcon, Menu } from "lucide-react"
+import Image from "next/image"
 import ProfileDialog from "@/components/ProfileDialog"
 import { useRouter } from "next/navigation"
 import { twMerge } from "tailwind-merge"
@@ -64,7 +65,7 @@ const MobileHeader = () => {
   return (
     <>
     <div className="md:hidden fixed bg-theme-dark-blue top-0 right-0 left-0 h-18.75 px-4 flex items-center z-20">
-      <div className="flex items-center w-18 justify-center">
+      <div className="flex items-center gap-1">
         <button onClick={() => toggleSidebar()}
           className={twMerge(
             "p-3 cursor-pointer hover:bg-white/10 rounded-2xl border-none",
@@ -73,6 +74,14 @@ const MobileHeader = () => {
         }>
           <Menu color="#F9FAFB" size={24}/>
         </button>
+        <Image
+          src="/LogoTextLight.svg"
+          alt="KSP Logo"
+          width={90}
+          height={24}
+          style={{ height: "auto" }}
+          priority
+        />
       </div>
 
       <div className="ml-auto">

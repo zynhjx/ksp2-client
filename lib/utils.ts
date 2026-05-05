@@ -40,3 +40,30 @@ export const announcementCategoryColors: Record<string, string> = {
   reminder: "bg-yellow-500",
   opportunity: "bg-purple-500",
 };
+
+export const announcementIconBg: Record<string, string> = {
+  general: "bg-blue-100 border-blue-200",
+  urgent: "bg-red-100 border-red-200",
+  event: "bg-purple-100 border-purple-200",
+  reminder: "bg-amber-100 border-amber-200",
+  opportunity: "bg-emerald-100 border-emerald-200",
+  default: "bg-blue-100 border-blue-200",
+};
+
+export const announcementIconColor: Record<string, string> = {
+  general: "text-blue-500",
+  urgent: "text-red-500",
+  event: "text-purple-500",
+  reminder: "text-amber-500",
+  opportunity: "text-emerald-500",
+  default: "text-blue-500",
+};
+
+export const announcementBadge: Record<string, string> = {
+  general: "bg-blue-50 text-blue-700 border-blue-200",
+  urgent: "bg-red-50 text-red-700 border-red-200",
+  event: "bg-purple-50 text-purple-700 border-purple-200",
+  reminder: "bg-amber-50 text-amber-700 border-amber-200",
+  opportunity: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  default: "bg-gray-100 text-gray-700 border-gray-200",
+};

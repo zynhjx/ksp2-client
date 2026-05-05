@@ -29,7 +29,7 @@ const DeactivationGuard = () => {
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent showCloseButton={false}>
+      <DialogContent showCloseButton={false} aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Account Suspended</DialogTitle>
           <DialogDescription>
